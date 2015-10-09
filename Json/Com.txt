@@ -1,0 +1,22 @@
+
+S (Serveur)
+D (display)
+R (requester)
+C (Cab)
+
+Connection d'un utilisateur display
+
+il demande la map avec une connection http://xxx/getmap il recoit la map sous le format Json
+
+Il ouvre aussi une connection websocket
+S -> D
+	cette websocket permet de récupérer les informations de positions des taxis 
+R -> S 
+	envoie d'une requestCab
+	
+connection d'un utilisteur Cab
+
+il se connecte sur un websocket Serveur.
+le serveur genere un id
+
+il envoie la liste des taches
