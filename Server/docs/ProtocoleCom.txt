@@ -1,0 +1,195 @@
+===============================================
+				Rasp <=> Galileo
+
+#1 Récupération des informations de connection du WebSocket
+
+	---- REQUEST ----
+	GET: /api/getsocket?device_type=cab_device
+	
+	---- RESPONSE ----
+	Format: JSON
+	Data: 
+	{
+		host: "192.168.1.1",
+		port: 80,
+		room: cab_device
+	}
+
+#2 Initialisation de la connection => A voir si vraiment utile
+
+	---- REQUEST ----
+	WS: 'user_connecting'
+	
+	---- RESPONSE ----
+	Empty
+
+#3 Inscription à une room
+
+	---- REQUEST ----
+	WS: 'subscribe'
+	Format: JSON
+	Data:
+	{
+		room: 'cab_device'
+	}
+	
+	---- RESPONSE ----
+	Empty
+
+#4 Réception de message de type "Requests"
+
+	---- REQUEST ----
+	Empty
+	
+	---- RESPONSE ----
+	WS: 'receive'
+	Format: JSON
+	Data:
+	{
+		requests: [id_request1, id_request2 ....]
+	}
+
+#5 Publication de message
+
+	---- REQUEST ----
+	WS: 'publish'
+	Format: JSON
+	Data:
+	{
+		type: 'request_response',
+		data: 
+		{
+			id_cab: #,
+			id_request: #
+			is_accepted: boolean,
+		}
+	}
+	
+	---- RESPONSE ----
+	Empty
+
+#6 Desinscription à une room
+	
+	---- REQUEST ----
+	WS: 'subscribe'
+	Format: JSON
+	Data:
+	{
+		room: 'cab_device'
+	}
+	
+	---- RESPONSE ----
+	Empty
+
+#7 Déconnection du WebSocket
+
+	---- REQUEST ----
+	WS: 'user_deconnecting'
+	
+	---- RESPONSE ----
+	Empty
+
+===============================================
+
+===============================================
+			Rasp <=> Displayer/Requester
+
+#1 Récupération des informations de la map
+	---- REQUEST ----
+	GET: /api/getmap
+	
+	---- RESPONSE ----
+	Format: JSON
+	Data: 
+	{
+		areas: [ ... ]
+	}
+
+#2 Récupération des informations de connection du WebSocket
+
+	---- REQUEST ----
+	GET: /api/getsocket?device_type=display
+	
+	---- RESPONSE ----
+	Format: JSON
+	Data: 
+	{
+		host: "192.168.1.1",
+		port: 80,
+		room: display
+	}
+
+#3 Initialisation de la connection => A voir si vraiment utile
+
+	---- REQUEST ----
+	WS: 'user_connecting'
+	
+	---- RESPONSE ----
+	Empty
+
+#4 Inscription à une room
+
+	---- REQUEST ----
+	WS: 'subscribe'
+	Format: JSON
+	Data:
+	{
+		room: 'display'
+	}
+	
+	---- RESPONSE ----
+	Empty
+	
+#5 Réception de message de type "CabsInfos"
+
+	---- REQUEST ----
+	Empty
+	
+	---- RESPONSE ----
+	WS: 'receive'
+	Format: JSON
+	Data:
+	{
+		cabs_infos: [cab_info1, cab_info2 ...]
+	}
+
+#6 Publication de message
+
+	---- REQUEST ----
+	WS: 'publish'
+	Format: JSON
+	Data:
+	{
+		type: 'request',
+		data: 
+		{
+			id_request: #
+			is_accepted: boolean,
+		}
+	}
+	
+	---- RESPONSE ----
+	Empty
+	
+#7 Desinscription à une room
+	
+	---- REQUEST ----
+	WS: 'unsubscribe'
+	Format: JSON
+	Data:
+	{
+		room: 'cab_device'
+	}
+	
+	---- RESPONSE ----
+	Empty
+
+#8 Déconnection du WebSocket
+
+	---- REQUEST ----
+	WS: 'user_deconnecting'
+	
+	---- RESPONSE ----
+	Empty
+
+===============================================
