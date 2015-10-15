@@ -1,0 +1,69 @@
+Message :
+
+	Message {
+		"type" : string,
+		"room" : string,
+		"data" : CabInfos | CabLocalisation | CabRequests | CabRequest | RequestResponse
+	}
+
+	CabInfos {
+		"IdCab" : string,
+		"Odometer" : #,
+		"IsBusy" : boolean,
+		"Queue" : #
+	}
+	
+	CabLocalisation {
+		"IdCab" : string,
+		"ActualPos" : LocVertex | LocStreet,
+		"Destination" : LocVertex | LocStreet
+	}
+	
+	CabRequests {
+		"Requests": [CabRequest...]
+	}
+	
+	CabRequest {
+		"IdRequest" : string,
+		"Position": LocVertex | LocStreet
+	}
+	
+	RequestResponse {
+		"Request" : CabRequest,
+		"IdCab" : string,
+		"IsAccepted" : boolean
+	}	
+	
+Rooms :
+	
+	display 
+		=> Message:CabRequests
+		=> Message:CabInfos
+	cab_device
+		=> Message:RequestResponse
+		=> Message:CabRequest
+		=> Message:CabInfos
+	
+Contenu dans les messages:
+
+	LocVertex {
+		"area": area.name,
+		"locationType": "vertex",
+		"location": vertex.name
+	}
+	
+	LocStreet {
+		"area": area.name,
+		"locationType": "street",
+		"location": {
+			"from": vertex.name,
+			"to": vertex.name,
+			"progression": # between 0 and 1
+			}
+	}
+	
+	vertex {
+		"name": string,
+		"x": # between 0 and 1,
+		"y": # between 0 and 1
+	}
