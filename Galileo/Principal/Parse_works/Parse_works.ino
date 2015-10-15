@@ -35,6 +35,7 @@ struct comDatas{
 void setup(){
     lcd.begin(16,2);        //initialisation du lcd
     Serial.begin(9600);     //initialisation du terminal
+    lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("   En attente   ");
     lcd.setCursor(0,1);
@@ -48,12 +49,12 @@ void setup(){
     client2.onOpen(onOpen);
 //    client2.onMessage(onMessage);
 //    client2.onError(onError);
-    if(client.connect(server,80)){
-      Serial.println("Connected");
-    }
-    else{
-      Serial.println("Connection failed");
-    }
+//    if(client.connect(server,80)){
+//      Serial.println("Connected");
+//    }
+//    else{
+//      Serial.println("Connection failed");
+//    }
 }
 
 void loop(){
@@ -64,15 +65,15 @@ void loop(){
 
   switch (lcd_key)               // depending on which button was pushed, we perform an action
   {
-  case btnRIGHT:  //A définir
+  case btnRIGHT:
     {
       break;
     }
-  case btnLEFT:   //A définir
+  case btnLEFT:
     {
       break;
     }
-  case btnUP:     //Changer de menu
+  case btnUP:
   case btnDOWN:
     {
       IPAddress myAddr = Ethernet.localIP();
@@ -103,13 +104,17 @@ void loop(){
       lcd.print(first_octet);
       break;
     }
-  case btnSELECT:   //Ne marche pas pour le moment
+  case btnSELECT:
+    {
+      break;
+    }
+  case btnNONE:
     {
       break;
     }
   }
   
-  struct comDatas tmp = ComProcess(Serial.readString());  //Actuellement pour des tests
+  struct comDatas tmp = ComProcess(Serial.readString());
   lcd.setCursor(0,0);
   lcd.clear();
   lcd.print("km:");
@@ -157,7 +162,7 @@ struct comDatas ComProcess(String in){ //Pour parser le string
     return Datas;
 }
 
-int read_LCD_buttons(){ //Fonction pour récupérer l'appui ou le release des boutons
+int read_LCD_buttons(){
   adc_key_in = analogRead(0);      // read the value from the sensor 
   delay(5); //switch debounce delay. Increase this delay if incorrect switch selections are returned.
   int k = (analogRead(0) - adc_key_in); //gives the button a slight range to allow for a little contact resistance noise
@@ -170,19 +175,15 @@ int read_LCD_buttons(){ //Fonction pour récupérer l'appui ou le release des bo
   return btnNONE;  
 }
 
-void onOpen(WebSocketClient client){  //Renverra le type de matériel pour recevoir les bonnes donnée
-  Serial.println("A définir");
+void onOpen(WebSocketClient client){
+  Serial.println("Example: onOpen()");
 }
 
-void onMessage(WebSocketClient client, char* message) {   
-  Serial.println("EXAMPLE: onMessage()");
-  Serial.print("Received: "); 
-  Serial.println(message);
+void onMessage(){
+  
 }
 
-void onError(WebSocketClient client, char* message) {
-  Serial.println("EXAMPLE: onError()");
-  Serial.print("ERROR: "); 
-  Serial.println(message);
+void onError(){
+  
 }
 
