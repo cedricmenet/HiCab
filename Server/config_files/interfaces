@@ -1,0 +1,19 @@
+auto lo
+iface lo inet loopback
+
+auto eth0
+allow-hotplug eth0
+
+# MODE CLIENT DHCP
+#iface eth0 inet dhcp
+
+# MODE HOST DHCP
+iface eth0 inet static
+	address 192.168.2.1
+	netmask 255.255.255.0
+
+auto wlan0
+allow-hotplug wlan0
+iface wlan0 inet static
+	address 192.168.1.1
+	netmask	255.255.255.0

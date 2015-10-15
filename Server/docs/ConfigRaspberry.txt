@@ -1,0 +1,79 @@
+======================================================================
+Configuration en serveur DHCP sur eth0 et wlan0 (no bridge)
+
+	-> Voir fichier de config:
+		/etc/network/interface
+		/etc/hostapd/hostapd.conf
+		/etc/default/hostapd
+		/etc/dnsmasq.conf
+		
+	-> Etapes d'installation
+		#1 Mise a jour
+		apt-get update
+		apt-get upgrade
+		
+		#2 Install package 
+		sudo apt-get install 
+				ZD1211-firmware  #
+				hostapd 		 #
+				hostap-utils 	 #
+				iw 				 Erreur à l'install, cf tuto 1
+				dnsmasq 		 #
+				bridge-utils     Non utilisé
+				rfkill			 Non utilisé
+	
+		#3 Paramétrage des interfaces
+			/etc/network/interface
+		eth0  static 192.168.2.1
+		wlan0 static 192.168.1.1
+		
+		#4 Paramétrage hostapd (point d'accès wifi)
+			/etc/hostapd/hostapd.conf
+		ssid: HiCab-Wifi
+		wpa2: Ask me ...
+		
+		#5 Ajout du chargement de la conf hostapd
+			/etc/default/hostapd
+		DAEMON_CONF = "/etc/hostapd/hostapd.conf"
+
+		#6 Config de dnsmask (serveur DHCP et DNS)
+			/etc/dnsmasq.conf
+		interface = wlan0, eth0
+		dhcp-range = wlan0 192.168.1.100, 192.168.1.150
+		dhcp-range = eth0 192.168.2.100, 192.168.2.150
+
+	-> Problèmes connus
+		#1 Au démarrage, il arrive qu'une des deux interfaces 
+		ne se monte pas correctement (ip hs, ou serveur dhcp).
+		Solution:	
+			ifdown eth0 ou wlan0
+			ifup eth0 ou wlan0
+			pour wlan0: service hostapd restart
+		
+		#2 Impossible de dédié le serveur dhcp sur une interface
+		static et avoir la seconde interface en dhcp "receptrice"
+		Solution:
+			Config des 2 interfaces en static avec le serveur dhcp
+			sur chacune.
+			(Pour connection au web, passer eth0 en dhcp et modifier
+			dnsmasq.conf, attention dhcpd ne démarrera plus dans cette config)
+
+Tutos:
+	http://www.framboise314.fr/mettez-un-routeur-dans-votre-raspberry-pi-ou-linverse/
+	https://agentoss.wordpress.com/2011/10/31/creating-a-wireless-access-point-with-debian-linux/
+	http://doc.ubuntu-fr.org/configuration_serveur_dns_dhcp
+	https://wiki.debian.org/HowTo/dnsmasq#Basic_DHCP_Setup
+	
+======================================================================
+Installation de python2.7 et packages
+
+	sudo apt-get install python
+	sudo apt-get install python-pip
+	sudo pip install Flask
+	sudo pip install flask-socketio
+	
+Tutos et exemple:
+	http://www.instructables.com/id/Python-Web-Server-for-your-Raspberry-Pi/?ALLSTEPS
+	https://github.com/miguelgrinberg/Flask-SocketIO
+	
+======================================================================
