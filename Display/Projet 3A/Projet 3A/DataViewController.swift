@@ -11,11 +11,14 @@ import UIKit
 class DataViewController: UIViewController {
 
     @IBOutlet weak var dataLabel: UILabel!
-    var dataObject: String = ""
+    var dataObject: String = "BLOP" 
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print("dffddf")
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
 
