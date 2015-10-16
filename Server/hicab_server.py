@@ -17,7 +17,7 @@ class Cab:
 		self.odometer = 0
 		
 class CabRequest:
-	def __init__(self, id_request)
+	def __init__(self, id_request):
 		self.id_request = id_request
 		self.cabs_responses = []
 		self.localisation = None
@@ -116,7 +116,7 @@ def receive_message(message):
 		data = []
 		for req in requests:
 			data.append({'id_request': req.id_request,
-				 		 'cabs_responses' : req.cabs_responses})			
+				 		 'cabs_responses' : req.cabs_responses})
 		msg_queue = {'type': u'requests_queue', 
 					 'requests': data}
 		# Envoi de la nouvelle queue dans la room cab_device
