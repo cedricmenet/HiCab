@@ -164,7 +164,7 @@
 		data: 
 		{
 			id_request: #
-			is_accepted: boolean,
+			localisation: LocVertex | LocStreet
 		}
 	}
 	
