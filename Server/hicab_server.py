@@ -112,6 +112,15 @@ def receive_message(message):
 		request = message['data']
 		new_request = CabRequest(len(requests), request['localisation'])
 		requests.append(new_request)
+		# Préparation du message requests_queue
+		data = []
+		for req in requests:
+			data.append({'id_request': req.id_request,
+				 		 'cabs_responses' : req.cabs_responses})			
+		msg_queue = {'type': u'requests_queue', 
+					 'requests': data}
+		# Envoi de la nouvelle queue dans la room cab_device
+		send_room_message(msg_queue, 'cab_device')
 	elif (message['type'] == 'request_response'):
 		toto = None
 	print('Message published: ' + message['data'])
@@ -134,13 +143,19 @@ def connect_request():
 	print('Client connected')
 
 #### EMISSION
-# Envoi d'un message dans une room
+# Envoi d'un message dans une room (depuis la page de test)
 @socketio.on('send_room_message')
 def send_room_message(message):
 	emit('receive',
 		{'type': message['type'], 'room': message['room'] ,'data': message['data']},
 		room = message['room'])
 	print('Message emit on room: ' + message['room'] + ', data:' + message['data'])
+
+# Envoi d'un message dans une room
+def send_room_message(message, room_name):
+	emit('receive',	jsonify(message), room = room_name)
+	print('Message emit on room: ' + room_name + ', data: ' + message)
+
 
 ####### MAIN #######
 if __name__ == '__main__':
