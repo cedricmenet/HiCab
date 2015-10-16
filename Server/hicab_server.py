@@ -59,10 +59,10 @@ def cabs_move_thread():
 # Page d'accueil
 @app.route('/')
 def index():
-	global thread
-	if thread is None:
-		thread = Thread(target=cabs_move_thread)
-		thread.start()
+	#global thread
+	#if thread is None:
+		#thread = Thread(target=cabs_move_thread)
+		#thread.start()
 	return render_template('index.html')
 	
 # Page de test des WebSockets
