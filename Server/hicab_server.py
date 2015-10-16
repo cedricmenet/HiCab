@@ -142,11 +142,6 @@ def send_room_message(message):
 		room = message['room'])
 	print('Message emit on room: ' + message['room'] + ', data:' + message['data'])
 
-####### Messages Handler #######
-def 
-
-
-
 ####### MAIN #######
 if __name__ == '__main__':
 	socketio.run(app, host="0.0.0.0", port=80)
