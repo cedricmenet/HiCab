@@ -13,9 +13,6 @@
                 socket.emit('user_connecting');
                 return false;
             });
-            //socket.on('connect', function() {
-            //    socket.emit('user_connecting');
-            //});
             // Réception des messages du serveur
             socket.on('receive', function(msg) {
                 $('#log').append('<br>Received on room "' + msg.room + '": [Type: ' + msg.type + ', data: ' + msg.data + ']');
