@@ -14,8 +14,8 @@ class Cab:
 		self.odometer = 0
 		self.is_busy = False
 		
-	def to_json(self):
-		return jsonify({'id_cab': self.id_cab,
+	def get_status(self):
+		return str({'id_cab': self.id_cab,
 				'odometer': self.odometer,
 				'is_busy': self.is_busy})
 		
@@ -28,6 +28,57 @@ class CabRequest:
 class Localisation:
 	def __init__(self):
 		self.toto = None
+
+######## CHANNELS #######
+## CAB DEVICE ##
+class CabDeviceTransmitter(Thread):
+	def __init__(self, cab, ws):
+		Thread.__init__(self)
+		self.cab = cab
+		self.websocket = ws
+		self.on_air = True
+		
+	def run(self):
+		
+		while self.on_air:
+			try:
+				time.sleep(2)
+				status = self.cab.get_status()
+				print('[=> CabDevice#'+ str(self.cab.id_cab) +']: ' + status)
+				self.websocket.send(status)
+			except:
+				print('[XX CabDevice#'+ str(self.cab.id_cab) +']: Transmitter connection lost')
+				self.on_air = False
+
+class CabDeviceListener(Thread):
+	def __init__(self, cab, ws):
+		Thread.__init__(self)
+		self.cab = cab
+		self.websocket = ws
+		self.on_air = True
+	def run(self):
+		while self.on_air:
+			try:
+				message = self.websocket.receive()
+				print('[<= CabDevice#'+ str(self.cab.id_cab) +']: ' + message)
+			except:
+				print('[XX CabDevice#'+ str(self.cab.id_cab) +']: Listener connection lost')
+				self.on_air = False
+
+class CabDeviceChannel():
+	def __init__(self, cab, ws):
+		self.cab = cab
+		self.websocket = ws
+		self.on_air = True
+	
+	def diffuse_channel(self):
+		thread_listener = CabDeviceListener(self.cab, self.websocket)
+		thread_transmitter = CabDeviceTransmitter(self.cab, self.websocket)
+		thread_listener.start()
+		thread_transmitter.start()
+		thread_listener.join()
+		thread_transmitter.join()
+	
 
 ######## THREAD LOCKS #######
 cabs_lock = Lock()
@@ -87,13 +138,14 @@ def subscribe_cab():
 	response = {'id_cab': new_cab.id_cab,
 				'channel': u'cab_device' }
 	cabs_lock.release()
-	print ('[Subscribe] Cab #' + str(new_cab.id_cab) + ' subscribe')
+	print ('[!! Subscribe] Cab #' + str(new_cab.id_cab) + ' registered')
 	return jsonify(response)
 	
 # Inscription d'un nouvel afficheur
 @app.route('/subscribe/display')
 def subscribe_display():
 	response = {'channel': u'display_device'}
+	print ('[!! Subscribe] New display registered')
 	return jsonify(response)
 	
 # Demarrage de la simulation des taxis
@@ -103,7 +155,8 @@ def move_cabs():
 	if thread is None:
 		thread = Thread(target=cabs_move_thread)
 		thread.start()
-	return ""
+		print('[Simulation] Start move')
+	return ''
 
 ####### WEBSOCKET #######
 # Envoi les infos aux cab_device
@@ -114,25 +167,17 @@ def channel_cab_device(ws):
 	#on recupere l'ID du cab
 	try:
 		message = ws.receive()
-		print('[Cab Devices] Received: ' + message)
+		print('[!! CabDevice] Starting channel with: ' + message)
 		id_cab = int(json.loads(message)['id_cab'])
 		cab = cabs[id_cab]
 	except:
-		print('[Error] Invalid "id_cab" received')
+		print('[XX CabDevice] Error: Invalid "id_cab" received')
 		is_open = False
-	while is_open:
-		try:
-			time.sleep(2)
-			status = ({'id_cab': cab.id_cab,
-					'odometer': cab.odometer,
-					'is_busy': cab.is_busy})
-			print('[Cab Device] Sending: ' + str(status))
-			ws.send(str(status))
-		except:
-			print('[Cab Device] - - Connection closed')
-			is_open = False
+	if is_open:	
+		channel = CabDeviceChannel(cab, ws)
+		channel.diffuse_channel()
 
-	
+
 # Echo (pour test)
 @sockets.route('/echo')
 def echo_socket(ws):
