@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-from gevent import monkey
-monkey.patch_all()
-
 import time
-from threading import Thread
-from flask import Flask, render_template, session, request, jsonify, send_from_directory
+from threading import Thread, Lock
+from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
 
 ####### CLASSES #######
@@ -14,6 +11,12 @@ class Cab:
 		self.position = position
 		self.destination = None
 		self.odometer = 0
+		self.is_busy = False
+		
+	def to_json():
+		return jsonify({'id_cab': self.id_cab,
+				'odometer': self.odometer,
+				'is_busy': self.is_busy})
 		
 class CabRequest:
 	def __init__(self, id_request):
@@ -24,7 +27,10 @@ class CabRequest:
 class Localisation:
 	def __init__(self):
 		self.toto = None
-	
+
+######## THREAD LOCKS #######
+cabs_lock = Lock()
+
 ######## VARIABLES #######
 # Map
 areas = [{'name': u'Quartier Nord','map': {'weight': {'w': 1,'h': 1},'vertices': [{'name': u'm','x': 0.5,'y': 0.5},{'name': u'b','x': 0.5,'y': 1}],'streets': [{'name': u'mb','path': [u'm',u'b'],'oneway': False}],'bridges': [{'from': u'b','to': {'area': u'Quartier Sud','vertex': u'h'},'weight': 2}]}},{'name': u'Quartier Sud','map': {'weight': {'w': 1,'h': 1},'vertices': [{'name': u'a','x': 1,'y': 1},{'name': u'm','x': 0,'y': 1},{'name': u'h','x': 0.5,'y': 0}],'streets': [{'name': u'ah','path': [u'a',u'h'],'oneway': False},{'name': u'mh','path': [u'm',u'h'],'oneway': False}],'bridges': [{'from': u'h','to': {'area': u'Quartier Nord','vertex': u'b'},'weight': 2}]}}]
@@ -44,6 +50,16 @@ app.debug = True
 app.config['SECRET_KEY'] = 'secret!'
 sockets = Sockets(app)
 
+####### BACKGROUND #######
+# Thread de déplacement des cabs
+def cabs_move_thread():
+	while True:
+		time.sleep(5)
+		cabs_lock.acquire()
+		for cab in cabs
+			cab.odometer += 1
+		cabs_lock.release()
+
 ####### WEBSERVER #######
 # Page de test des WebSockets
 @app.route('/test/websocket')
@@ -56,8 +72,54 @@ def test_websocket():
 def send_js(path):
 	return send_from_directory('scripts', path)
 
-####### WEBSOCKET #######
+# Inscription d'un taxis
+@app.route('/subscribe/cab')
+def subscribe_cab():
+	cabs_lock.acquire()
+	new_cab = Cab(len(cabs), None)
+	cabs.append(new_cab)
+	response = {'id_cab': new_cab.id_cab,
+				'channel': u'cab_device' }
+	cabs_lock.release()
+	return jsonify(response)
+	
+# Inscription d'un nouvel afficheur
+@app.route('/subscribe/display')
+def subscribe_display():
+	response = {'channel': u'display_device'}
+	return jsonify(response)
+	
+@app.route('/simulation/start_move')
+def move_cabs():
+	global thread
+	if thred is None:
+		thread = Thread(target=cabs_move_thread)
+		thread.start()
 
+####### WEBSOCKET #######
+# Envoi les infos aux cab_device
+@sockets.route('/cab_device')
+def channel_cab_device(ws):
+	is_open = True
+	cab = None
+	#on recupere l'ID du cab
+	try:
+		message = ws.receive()
+		id_cab = int(message)
+		cab = cabs[id_cab]
+	except:
+		print('[Error] Invalid "id_cab" received')
+		is_open = False
+	while is_open:
+		try:
+			time.sleep(2)
+			ws.send(cab.to_json())
+		except:
+			print('[Cab Device] - - Connection closed')
+			is_open = False
+
+	
+# Echo (pour test)
 @sockets.route('/echo')
 def echo_socket(ws):
 	is_open = True
