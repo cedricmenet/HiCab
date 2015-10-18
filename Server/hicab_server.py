@@ -16,8 +16,8 @@ class Cab:
 		
 	def get_status(self):
 		return str({'id_cab': self.id_cab,
-				'odometer': self.odometer,
-				'is_busy': self.is_busy})
+					'odometer': self.odometer,
+					'is_busy': self.is_busy})
 		
 class CabRequest:
 	def __init__(self, id_request):
@@ -30,16 +30,14 @@ class Localisation:
 		self.toto = None
 
 ######## CHANNELS #######
-## CAB DEVICE ##
+## CAB DEVICE : EMITTER ##
 class CabDeviceTransmitter(Thread):
 	def __init__(self, cab, ws):
 		Thread.__init__(self)
 		self.cab = cab
 		self.websocket = ws
 		self.on_air = True
-		
 	def run(self):
-		
 		while self.on_air:
 			try:
 				time.sleep(2)
@@ -49,7 +47,7 @@ class CabDeviceTransmitter(Thread):
 			except:
 				print('[XX CabDevice#'+ str(self.cab.id_cab) +']: Transmitter connection lost')
 				self.on_air = False
-
+## CAB DEVICE : LISTENER ##
 class CabDeviceListener(Thread):
 	def __init__(self, cab, ws):
 		Thread.__init__(self)
@@ -64,7 +62,8 @@ class CabDeviceListener(Thread):
 			except:
 				print('[XX CabDevice#'+ str(self.cab.id_cab) +']: Listener connection lost')
 				self.on_air = False
-
+				
+## CHANNEL CABDEVICE ##
 class CabDeviceChannel():
 	def __init__(self, cab, ws):
 		self.cab = cab
