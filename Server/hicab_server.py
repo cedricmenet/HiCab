@@ -66,6 +66,11 @@ def cabs_move_thread():
 def test_websocket():
 	return render_template('test_websocket.html')
 	
+@app.route('/simulation')
+def simulation():
+	device_type = request.args.get('device_type', 'cab_device')
+	return render_template('simulation_' + device_type + '.html')
+
 ####### WEBSERVICES #######
 # Renvoie les scripts JS
 @app.route('/scripts/<path:path>')
@@ -89,6 +94,7 @@ def subscribe_display():
 	response = {'channel': u'display_device'}
 	return jsonify(response)
 	
+# Demarrage de la simulation des taxis
 @app.route('/simulation/start_move')
 def move_cabs():
 	global thread
