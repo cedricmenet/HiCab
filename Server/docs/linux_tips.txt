@@ -30,3 +30,7 @@ service service_name restart
 hostapd => point d'accès wifi
 dnsmasq => serveur dhcp et dns (dns pas configuré)
 networking => service de gestion des interfaces (perte de la connection ssh)
+
+#démarrage du serveur avec gunicorn
+cd /home/pi/hicab/
+sudo gunicorn -k flask_sockets.worker -b 0.0.0.0:80  hicab_server:app
