@@ -1,0 +1,32 @@
+# retrouver les process python en cours d'execution
+ps auxf | grep py
+
+# kill le process
+kill ID
+
+# passer en root
+sudo -i
+
+# creer un repertoire
+mkdir nom_repertoire
+
+# supprimer un fichier
+rm nom_fichier
+
+# envoyer un fichier avec pscp
+pscp nom_fichier user@host:/chemin/nom_fichier
+
+# afficher les log du dhcp
+tail -f /var/log/syslog
+
+# reboot des interfaces réseau (eg: eth0)
+ifdown eth0
+ifup eth0
+
+# reboot d'un service
+service service_name restart
+
+# services principaux utilisé par HiCab
+hostapd => point d'accès wifi
+dnsmasq => serveur dhcp et dns (dns pas configuré)
+networking => service de gestion des interfaces (perte de la connection ssh)

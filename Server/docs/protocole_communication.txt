@@ -36,7 +36,7 @@
 	---- RESPONSE ----
 	Empty
 
-#4 Réception de message de type "Requests"
+#4 Réception de message de type "requests_queue"
 
 	---- REQUEST ----
 	Empty
@@ -46,7 +46,20 @@
 	Format: JSON
 	Data:
 	{
-		requests: [id_request1, id_request2 ....]
+		type: 'requests_queue',
+		requests: [
+			{ 
+				id_request: #,
+				cabs_responses: [
+					{id_cab: #, acceptance: boolean},
+					{id_cab: #, acceptance: boolean}]
+			},
+			{
+				id_request: #,
+				cabs_responses: [
+					{id_cab: #, acceptance: boolean},
+					{id_cab: #, acceptance: boolean}]
+			}]
 	}
 
 #5 Publication de message
@@ -163,8 +176,7 @@
 		type: 'request',
 		data: 
 		{
-			id_request: #
-			is_accepted: boolean,
+			localisation: LocVertex | LocStreet
 		}
 	}
 	

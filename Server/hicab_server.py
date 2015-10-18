@@ -16,6 +16,12 @@ class Cab:
 		self.destination = None
 		self.odometer = 0
 		
+class CabRequest:
+	def __init__(self, id_request):
+		self.id_request = id_request
+		self.cabs_responses = []
+		self.localisation = None
+		
 class Localisation:
 	def __init__(self):
 		self.toto = None
@@ -26,6 +32,9 @@ areas = [{'name': u'Quartier Nord','map': {'weight': {'w': 1,'h': 1},'vertices':
 
 # Liste de Cab
 cabs = []
+
+# Liste des CabRequest
+requests = []
 
 # Thread de déplacement
 thread = None
@@ -50,10 +59,10 @@ def cabs_move_thread():
 # Page d'accueil
 @app.route('/')
 def index():
-	global thread
-	if thread is None:
-		thread = Thread(target=cabs_move_thread)
-		thread.start()
+	#global thread
+	#if thread is None:
+		#thread = Thread(target=cabs_move_thread)
+		#thread.start()
 	return render_template('index.html')
 	
 # Page de test des WebSockets
@@ -98,8 +107,22 @@ def subscribe_room(message):
 # Reception des messages des clients
 @socketio.on('publish')
 def receive_message(message):
-	msg_type = message['type']
-	msg_data = message['data']
+	if (message['type'] == 'request'):
+		# Nouvelle requête reçue: ajout dans la liste
+		request = message['data']
+		new_request = CabRequest(len(requests), request['localisation'])
+		requests.append(new_request)
+		# Préparation du message requests_queue
+		data = []
+		for req in requests:
+			data.append({'id_request': req.id_request,
+				 		 'cabs_responses' : req.cabs_responses})
+		msg_queue = {'type': u'requests_queue', 
+					 'requests': data}
+		# Envoi de la nouvelle queue dans la room cab_device
+		send_room_message(msg_queue, 'cab_device')
+	elif (message['type'] == 'request_response'):
+		toto = None
 	print('Message published: ' + message['data'])
 
 # Désinscription à une room
@@ -120,13 +143,19 @@ def connect_request():
 	print('Client connected')
 
 #### EMISSION
-# Envoi d'un message dans une room
+# Envoi d'un message dans une room (depuis la page de test)
 @socketio.on('send_room_message')
 def send_room_message(message):
 	emit('receive',
 		{'type': message['type'], 'room': message['room'] ,'data': message['data']},
 		room = message['room'])
 	print('Message emit on room: ' + message['room'] + ', data:' + message['data'])
+
+# Envoi d'un message dans une room
+def send_room_message(message, room_name):
+	emit('receive',	jsonify(message), room = room_name)
+	print('Message emit on room: ' + room_name + ', data: ' + message)
+
 
 ####### MAIN #######
 if __name__ == '__main__':
