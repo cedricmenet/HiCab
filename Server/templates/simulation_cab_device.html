@@ -5,23 +5,19 @@
     <script type="text/javascript" src="/scripts/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
-            // Creation du socket
-            var socket;
             // Connection
-			$('form#connect').submit(function(event) {
-                socket = new WebSocket("ws://" + location.host + "/cab_device");
-                socket.onopen = function() {
-                    message = {id_cab:0}
-                    socket.send(message);
-                };
-                socket.onclose = function(evt) {
-                    alert("socket closed");
-                };
-                socket.onmessage = function(evt){
-                    $('#log').append(evt.data + '<br/>');
-                }
-                return false;
-            });
+            var socket = new WebSocket("ws://" + location.host + "/cab_device");
+            socket.onopen = function() {
+                message = {'id_cab': 0};
+                socket.send(JSON.stringify(message));
+            };
+            socket.onclose = function(evt) {
+                alert("socket closed");
+            };
+            socket.onmessage = function(evt){
+                $('#log').append(evt.data + '<br/>');
+            }
+        
             // Envoi message
 			$('form#send').submit(function(event) {
                 socket.send($('#send_data').val());

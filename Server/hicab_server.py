@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
+import json
 from threading import Thread, Lock
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
@@ -13,7 +14,7 @@ class Cab:
 		self.odometer = 0
 		self.is_busy = False
 		
-	def to_json():
+	def to_json(self):
 		return jsonify({'id_cab': self.id_cab,
 				'odometer': self.odometer,
 				'is_busy': self.is_busy})
@@ -56,7 +57,7 @@ def cabs_move_thread():
 	while True:
 		time.sleep(5)
 		cabs_lock.acquire()
-		for cab in cabs
+		for cab in cabs:
 			cab.odometer += 1
 		cabs_lock.release()
 
@@ -86,6 +87,7 @@ def subscribe_cab():
 	response = {'id_cab': new_cab.id_cab,
 				'channel': u'cab_device' }
 	cabs_lock.release()
+	print ('[Subscribe] Cab #' + str(new_cab.id_cab) + ' subscribe')
 	return jsonify(response)
 	
 # Inscription d'un nouvel afficheur
@@ -98,9 +100,10 @@ def subscribe_display():
 @app.route('/simulation/start_move')
 def move_cabs():
 	global thread
-	if thred is None:
+	if thread is None:
 		thread = Thread(target=cabs_move_thread)
 		thread.start()
+	return ""
 
 ####### WEBSOCKET #######
 # Envoi les infos aux cab_device
@@ -111,7 +114,8 @@ def channel_cab_device(ws):
 	#on recupere l'ID du cab
 	try:
 		message = ws.receive()
-		id_cab = int(message)
+		print('[Cab Devices] Received: ' + message)
+		id_cab = int(json.loads(message)['id_cab'])
 		cab = cabs[id_cab]
 	except:
 		print('[Error] Invalid "id_cab" received')
@@ -119,7 +123,11 @@ def channel_cab_device(ws):
 	while is_open:
 		try:
 			time.sleep(2)
-			ws.send(cab.to_json())
+			status = ({'id_cab': cab.id_cab,
+					'odometer': cab.odometer,
+					'is_busy': cab.is_busy})
+			print('[Cab Device] Sending: ' + str(status))
+			ws.send(str(status))
 		except:
 			print('[Cab Device] - - Connection closed')
 			is_open = False
