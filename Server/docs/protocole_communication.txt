@@ -10,7 +10,7 @@
 	Format: JSON
 	Data: 
 	{
-		id_cab: #
+		id_cab: #,
 		channel: 'cab_device'
 	}
 
@@ -22,7 +22,7 @@
 	---- RESPONSE ----
 	Empty
 
-#3 1er transmission wesocket: Envoi de l'id_cab
+#3 1er transmission websocket: Envoi de l'id_cab
 
 	---- REQUEST ----
 	WS.SEND : /cab_info
@@ -58,12 +58,8 @@
 	Format: JSON
 	Data:
 	{
-		type: 'request_response',
-		data: 
-		{
-			id_cab: #,
-			is_accepted: boolean,
-		}
+		id_cab: #,
+		is_accepted: boolean,
 	}
 	
 	---- RESPONSE ----
