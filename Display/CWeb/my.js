@@ -4,6 +4,7 @@ var ctx;
 
 var ctxWidth;
 var ctxHeight;
+var txt_height;
 
 
 $( document ).ready( function (e) {
@@ -11,19 +12,21 @@ $( document ).ready( function (e) {
 canvas = $("#CMap")[0];
 console.log(canvas);
 
-var context = canvas.getContext('2d');
-context.clearRect(0, 0, canvas.width, canvas.height);
-context.font = '18pt Calibri';
-context.fillStyle = 'black';
-//context.fillText("Dessine moi un mouton !", 10, 25);
+ctx = canvas.getContext('2d');
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.font="30px Verdana";
+txt_height = 30;
+ctx.fillStyle = 'black';
+ctx.textAlign = 'center';
 
-ctx = context;
 
 
 
 $(window).resize(onResizeCanvas);
 
 console.log("hoy");
+
+onResizeCanvas();
 
 DrawMap();
 
@@ -44,19 +47,19 @@ function DrawMap(JMap){
 
 
 
-
-      var ctx = canvas.getContext('2d');
+		ctx.fillStyle = 'white';
+      ctx.clearRect(0,0,canvas.width,canvas.height);
       var centerX = canvas.width / 2;
       var centerY = canvas.height / 2;
       var radius = 70;
 
-      ctx.beginPath();
+      /*ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
       ctx.fillStyle = 'green';
       ctx.fill();
       ctx.lineWidth = 5;
       ctx.strokeStyle = '#003300';
-      ctx.stroke();
+      ctx.stroke();*/
 
 
       var JsonMapParsed = JSON.parse(JsonMap);
@@ -66,15 +69,24 @@ function DrawMap(JMap){
 
       for(var i = 0 ; i < vertices.length; i++){
       	console.log(vertices[i]["x"]*ctxWidth);
+		var txt = vertices[i]["name"]
+		var txt_width = ctx.measureText(txt).width ;// nombre arbitraire pour avoir 20% de marge avec le texte dans le cercle
+		
 		var centerX = vertices[i]["x"]*ctxWidth;
 		var centerY = vertices[i]["y"]*ctxHeight;
 		ctx.beginPath();
-		ctx.arc(centerX, centerY, 10, 0, 2 * Math.PI, false);
+		ctx.arc(centerX, centerY, txt_width, 0, 2 * Math.PI, false);
 		ctx.fillStyle = 'green';
-		ctx.fill();
+		//ctx.fill();
 		ctx.lineWidth = 5;
 		ctx.strokeStyle = '#003300';
 		ctx.stroke();
+		
+		ctx.fillStyle = 'black';
+		ctx.font="30px Verdana";
+		ctx.textAlign = 'center';
+		ctx.fillText(txt,centerX,centerY);
+		
       }
 
 
