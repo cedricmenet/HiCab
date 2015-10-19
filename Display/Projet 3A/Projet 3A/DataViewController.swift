@@ -17,7 +17,7 @@ class DataViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("dffddf")
+        print("test")
         
         // Do any additional setup after loading the view, typically from a nib.
     }
