@@ -6,11 +6,16 @@ var ctxWidth;
 var ctxHeight;
 var txt_height;
 
+var JsonMapParsed;
+
 
 $( document ).ready( function (e) {
 
 canvas = $("#CMap")[0];
 console.log(canvas);
+
+
+JsonMapParsed = JSON.parse(JsonMap);
 
 ctx = canvas.getContext('2d');
 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -47,11 +52,11 @@ function DrawMap(JMap){
 
 
 
-		ctx.fillStyle = 'white';
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      var centerX = canvas.width / 2;
-      var centerY = canvas.height / 2;
-      var radius = 70;
+	ctx.fillStyle = 'white';
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	var centerX = canvas.width / 2;
+	var centerY = canvas.height / 2;
+    var radius = 70;
 
       /*ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
@@ -62,11 +67,15 @@ function DrawMap(JMap){
       ctx.stroke();*/
 
 
-      var JsonMapParsed = JSON.parse(JsonMap);
-      var vertices = JsonMapParsed["areas"][0]["map"]["vertices"];
+      /*if(JsonMapParsed["areas"][1] != undefined){
+		  id = 1;
+	  }
+	  else */id = 0;
+	  
+      var vertices = JsonMapParsed["areas"][id]["map"]["vertices"];
 
       console.log(JsonMapParsed);
-	  var streets = JsonMapParsed["areas"][0]["map"]["streets"];
+	  var streets = JsonMapParsed["areas"][id]["map"]["streets"];
 	  
 		for(var i = 0 ; i < streets.length; i++){
 			
@@ -90,6 +99,8 @@ function DrawMap(JMap){
 				
 				//drawing street Name				
 				var txt = streets[i]["name"];
+				ctx.font="30px Verdana";
+				txt_height = 30;
 				var txt_width = ctx.measureText(txt).width;
 				
 				var center_txt_x = verticeA["x"] + Math.abs(verticeA["x"] - verticeB["x"])/2;
@@ -102,8 +113,7 @@ function DrawMap(JMap){
 				
 				ctx.beginPath();
 				ctx.fillStyle = 'white';
-				ctx.font="30px Verdana";
-				txt_height = 30;
+				
 				ctx.lineWidth = 2;
 				ctx.strokeStyle = 'black';
 				
@@ -166,6 +176,7 @@ function getVerticeByName(array, vertice_name){
 	}
 	return undefined;
 }
+
 
 
 var JsonMap = "\
