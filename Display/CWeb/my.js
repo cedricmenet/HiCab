@@ -65,32 +65,67 @@ function DrawMap(JMap){
       var JsonMapParsed = JSON.parse(JsonMap);
       var vertices = JsonMapParsed["areas"][0]["map"]["vertices"];
 
-      console.log(JsonMapParsed);	
+      console.log(JsonMapParsed);
+	  var streets = JsonMapParsed["areas"][0]["map"]["streets"];
+	  
+		for(var i = 0 ; i < streets.length; i++){
+			
+			if (streets[i]["path"].length != 2)
+				console.log("ERREUR : Path contain more than 2 vertices");
+			else{
+				var verticeA = getVerticeByName(vertices,streets[i]["path"][0]);
+				var verticeB = getVerticeByName(vertices,streets[i]["path"][1])
+				//drawing line between 2 vertices
+				
+				ctx.lineWidth = 5;
+				ctx.beginPath();
+				ctx.moveTo(verticeA["x"]*ctxWidth,verticeA["y"]*ctxHeight);
+				ctx.lineTo(verticeB["x"]*ctxWidth,verticeB["y"]*ctxHeight);
+				ctx.stroke();
+				
+				
+			}
+
+			
+		}
+	  
+	  
 
       for(var i = 0 ; i < vertices.length; i++){
       	console.log(vertices[i]["x"]*ctxWidth);
 		var txt = vertices[i]["name"]
-		var txt_width = ctx.measureText(txt).width ;// nombre arbitraire pour avoir 20% de marge avec le texte dans le cercle
+		ctx.font="30px Verdana";
+		var txt_width = ctx.measureText(txt).width;
 		
 		var centerX = vertices[i]["x"]*ctxWidth;
 		var centerY = vertices[i]["y"]*ctxHeight;
 		ctx.beginPath();
 		ctx.arc(centerX, centerY, txt_width, 0, 2 * Math.PI, false);
-		ctx.fillStyle = 'green';
-		//ctx.fill();
+		ctx.fillStyle = 'white';
+		ctx.fill();
 		ctx.lineWidth = 5;
-		ctx.strokeStyle = '#003300';
+		ctx.strokeStyle = 'black';
 		ctx.stroke();
 		
 		ctx.fillStyle = 'black';
-		ctx.font="30px Verdana";
+		
 		ctx.textAlign = 'center';
 		ctx.fillText(txt,centerX,centerY);
-		
       }
 
 
 }
+
+
+function getVerticeByName(array, vertice_name){
+	
+	for(var i = 0 ; i < array.length;i++){
+		if(array[i]["name"] == vertice_name)
+			return array[i];
+	}
+	return undefined;
+}
+
 
 var JsonMap = "\
 {\
