@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>HiCab cab_device simulation</title>
+    <script type="text/javascript" src="/scripts/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            $('form#register').submit(function(event) {
+                $.ajax( {
+                    type:'Get',
+                    url:'http://' + location.host + '/subscribe/cab',
+                    success:function(data) {
+                        $('#lbl_id').text(data['id_cab'].toString());
+                        $('#lbl_channel').text(data['channel'].toString());
+                    }
+                })
+                return false;
+            });
+            $('form#simulation').submit(function(event) {
+                $.ajax( {
+                    type:'Get',
+                    url:'http://' + location.host + '/simulation/start_move',
+                    success:function(data) {
+                    }
+                })
+                return false;
+            });
+            var socket;
+            $('form#connect').submit(function(event) {
+            // Connection
+                socket = new WebSocket("ws://" + location.host + "/cab_device");
+                socket.onopen = function() {
+                    message = {'id_cab': $('#lbl_id').text() };
+                    socket.send(JSON.stringify(message));
+                };
+                socket.onclose = function() {
+                   $('#log').append('Socket closed <br/>');
+                };
+                socket.onmessage = function(evt){
+                    $('#log').append(evt.data + '<br/>');
+                    cab = eval("(" + evt.data.replace("False","false").replace("True", "true") + ')')
+                    $('#lbl_isbusy').text(cab['is_busy'].toString());
+                    $('#lbl_odometer').text(cab['odometer'].toString());
+                }
+                return false;
+            });
+            $('form#request_accept').submit(function(event) {
+                message = {'is_accepted': true}
+                socket.send(JSON.stringify(message));
+                return false;
+            });
+             $('form#request_refuse').submit(function(event) {
+                message = {'is_accepted': false}
+                socket.send(JSON.stringify(message));
+                return false;
+            });
+            // Envoi message
+			$('form#send').submit(function(event) {
+                socket.send($('#send_data').val());
+                return false;
+            });
+            // Deconnection
+			$('form#disconnect').submit(function(event) {
+                socket.close();
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>HiCab cab_device simulation</h1>
+    <h2>Infos:</h2>
+    Channel:<label id='lbl_channel'>?</label><br/><br/>
+    Cab#<label id='lbl_id'>?</label><br/>
+    is_busy: <label id='lbl_isbusy'>?</label><br/>
+    odometer: <label id='lbl_odometer'>?</label>
+    <h2>Commands: </h2>
+    <form id="register" method="POST" action="">
+        <input type="submit" value="Register">
+    </form>
+    <form id="connect" method="POST" action="">
+        <input type="submit" value="Connect">
+    </form>
+    <form id="simulation" method="POST" action="">
+        <input type="submit" value="Start Move">
+    </form>
+    <form id="request_accept" method="POST" action="">
+        <input type="submit" value="Accept request">
+    </form>
+    <form id="request_refuse" method="POST" action="">
+        <input type="submit" value="Refuse request">
+    </form>
+    <form id="send" method="POST" action="">
+        <input type="text" name="send" id="send_data" placeholder="Message">
+        <input type="submit" value="Send">
+    </form>
+    <form id="disconnect" method="POST" action="">
+        <input type="submit" value="Disconnect">
+    </form>
+    <h2>Log:</h2>
+    <div id="log"></div>
+</body>
+</html>

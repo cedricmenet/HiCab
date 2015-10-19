@@ -3,43 +3,32 @@
 <head>
     <title>HiCab WebSocket Test</title>
     <script type="text/javascript" src="/scripts/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="/scripts/socket.io.js"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
-            namespace = '';
-            // Connection du socket
-            var socket = io.connect('http://' + document.domain + ':' + location.port);
-            $('form#connect').submit(function(event) {
-                socket.emit('user_connecting');
+            // Creation du socket
+            var socket;
+            // Connection
+			$('form#connect').submit(function(event) {
+                socket = new WebSocket("ws://" + location.host + "/echo");
+                socket.onopen = function() {
+                    socket.send("socket open");
+                };
+                socket.onclose = function(evt) {
+                    alert("socket closed");
+                };
+                socket.onmessage = function(evt){
+                    $('#log').append(evt.data + '<br/>');
+                }
                 return false;
             });
-            // Réception des messages du serveur
-            socket.on('receive', function(msg) {
-                $('#log').append('<br>Received on room "' + msg.room + '": [Type: ' + msg.type + ', data: ' + msg.data + ']');
-            });
-			// Abonnement à une room
-            $('form#join').submit(function(event) {
-                socket.emit('subscribe', {room: $('#join_room').val()});
+            // Envoi message
+			$('form#send').submit(function(event) {
+                socket.send($('#send_data').val());
                 return false;
             });
-			// Desabonnement à une room
-            $('form#leave').submit(function(event) {
-                socket.emit('unsubscribe', {room: $('#leave_room').val()});
-                return false;
-            });
-            // Publication d'un message
-            $('form#publish').submit(function(event) {
-                socket.emit('publish', {'type': 'publication' , data: $('#publish').val()});
-                return false;
-            });
-			// Envoi d'un message depuis le serveur dans une room (pour test)
-            $('form#send_room').submit(function(event) {
-                socket.emit('send_room_message', {'type': 'test_message' , room: $('#room_name').val(), data: $('#room_data').val()});
-                return false;
-            });
-			// Deconnection de l'utilisateur
-            $('form#disconnect').submit(function(event) {
-                socket.emit('user_disconnecting');
+            // Deconnection
+			$('form#disconnect').submit(function(event) {
+                socket.close();
                 return false;
             });
         });
@@ -48,29 +37,17 @@
 <body>
     <h1>HiCab Socket communication Test</h1>
     <h2>Send:</h2>
-    <form id="connect" method="POST" action="#">
+    <form id="connect" method="POST" action="">
         <input type="submit" value="Connect">
     </form>
-    <form id="join" method="POST" action='#'>
-        <input type="text" name="join_room" id="join_room" placeholder="Room Name">
-        <input type="submit" value="Join Room">
+    <form id="send" method="POST" action="">
+        <input type="text" name="send" id="send_data" placeholder="Message">
+        <input type="submit" value="Send">
     </form>
-    <form id="publish" method="POST" action='#'>
-        <input type="text" name="publish" id="publish" placeholder="Message">
-        <input type="submit" value="Publish">
-    </form>
-    <form id="leave" method="POST" action='#'>
-        <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">
-        <input type="submit" value="Leave Room">
-    </form>
-    <form id="send_room" method="POST" action='#'>
-        <input type="text" name="room_name" id="room_name" placeholder="Room Name">
-        <input type="text" name="room_data" id="room_data" placeholder="Message">
-        <input type="submit" value="Send to Room">
-    </form>
-    <form id="disconnect" method="POST" action="#">
+    <form id="disconnect" method="POST" action="">
         <input type="submit" value="Disconnect">
     </form>
+	
     <h2>Receive:</h2>
     <div id="log"></div>
 </body>
