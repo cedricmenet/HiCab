@@ -58,7 +58,6 @@
 	Format: JSON
 	Data:
 	{
-		id_cab: #,
 		is_accepted: boolean,
 	}
 	
@@ -129,7 +128,7 @@
 	Format: JSON
 	Data:
 	{
-		localisation: LocVertex | LocStreet
+		location: LocVertex | LocStreet
 	}
 	
 	---- RESPONSE ----
