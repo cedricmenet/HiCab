@@ -73,8 +73,11 @@ function DrawMap(JMap){
 			if (streets[i]["path"].length != 2)
 				console.log("ERREUR : Path contain more than 2 vertices");
 			else{
+				
+				//getting vertices
 				var verticeA = getVerticeByName(vertices,streets[i]["path"][0]);
 				var verticeB = getVerticeByName(vertices,streets[i]["path"][1])
+				
 				//drawing line between 2 vertices
 				
 				ctx.lineWidth = 5;
@@ -82,6 +85,44 @@ function DrawMap(JMap){
 				ctx.moveTo(verticeA["x"]*ctxWidth,verticeA["y"]*ctxHeight);
 				ctx.lineTo(verticeB["x"]*ctxWidth,verticeB["y"]*ctxHeight);
 				ctx.stroke();
+				
+				
+				
+				//drawing street Name				
+				var txt = streets[i]["name"];
+				var txt_width = ctx.measureText(txt).width;
+				
+				var center_txt_x = verticeA["x"] + Math.abs(verticeA["x"] - verticeB["x"])/2;
+				var center_txt_y = verticeA["y"] + Math.abs(verticeA["y"] - verticeB["y"])/2;
+				
+				// normalise to canavas
+				center_txt_x *= ctxWidth; 
+				center_txt_y *= ctxHeight;
+				
+				
+				ctx.beginPath();
+				ctx.fillStyle = 'white';
+				ctx.font="30px Verdana";
+				txt_height = 30;
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = 'black';
+				
+				ctx.fillRect(center_txt_x-txt_width/2,center_txt_y-txt_height/2,txt_width,txt_height);
+				ctx.rect(center_txt_x-txt_width/2,center_txt_y-txt_height/2,txt_width,txt_height);
+				ctx.stroke();
+				
+				
+				ctx.fillStyle = 'black';
+				ctx.textAlign = 'center';
+				ctx.fillText(txt,center_txt_x,center_txt_y+txt_height/2);
+				
+				
+				
+				
+				
+				
+				
+				
 				
 				
 			}
