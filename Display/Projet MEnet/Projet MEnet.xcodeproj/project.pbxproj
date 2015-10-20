@@ -19,6 +19,7 @@
 		1B9C01261BD5367500515932 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9C01251BD5367500515932 /* WebSocket.swift */; settings = {ASSET_TAGS = (); }; };
 		1B9C012A1BD6212200515932 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9C01291BD6212200515932 /* FirstViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		1B9C012C1BD637F700515932 /* ViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9C012B1BD637F700515932 /* ViewContainer.swift */; settings = {ASSET_TAGS = (); }; };
+		1B9C01301BD67F1100515932 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9C012F1BD67F1100515932 /* SwiftyJSON.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		1B9C01251BD5367500515932 /* WebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
 		1B9C01291BD6212200515932 /* FirstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 		1B9C012B1BD637F700515932 /* ViewContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewContainer.swift; sourceTree = "<group>"; };
+		1B9C012F1BD67F1100515932 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 				1B9C00FB1BD5302800515932 /* Info.plist */,
 				1B9C012B1BD637F700515932 /* ViewContainer.swift */,
 				1B9C011D1BD530BC00515932 /* MyDrawingView.swift */,
+				1B9C012F1BD67F1100515932 /* SwiftyJSON.swift */,
 			);
 			path = "Projet MEnet";
 			sourceTree = "<group>";
@@ -276,6 +279,7 @@
 				1B9C01261BD5367500515932 /* WebSocket.swift in Sources */,
 				1B9C011E1BD530BC00515932 /* MyDrawingView.swift in Sources */,
 				1B9C012C1BD637F700515932 /* ViewContainer.swift in Sources */,
+				1B9C01301BD67F1100515932 /* SwiftyJSON.swift in Sources */,
 				1B9C00F01BD5302800515932 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

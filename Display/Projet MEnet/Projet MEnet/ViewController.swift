@@ -10,18 +10,19 @@ import UIKit
 
 
 protocol MyViewDelegate {
-    func viewString() -> String;
+    func JsonMap() -> JSON;
 }
 
 class ViewController: UIViewController, MyViewDelegate{
     
     
-    func viewString() -> String {
-        return "blabla"
+    func JsonMap() -> JSON {
+        return self.myJson
     }
     
     @IBOutlet weak var myDrawingView: MyDrawingView!
     var toPass:String = ""
+    var myJson : JSON = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,24 +46,24 @@ class ViewController: UIViewController, MyViewDelegate{
             if error != nil {
                 print(error)
                 // handle error
-            } else {
-                // data has a length of 2523 - the contents at the url
-                if let httpRes = response as? NSHTTPURLResponse {
-                    // httpRes is 200
-                    let html = NSString(data:data!, encoding:NSUTF8StringEncoding)
-                    print(html)
-                    // **** html is nil ****
+            }
+            else{
+                
+                let data_str = NSString(data:data!, encoding:NSUTF8StringEncoding)
+                if let dataFromString = data_str!.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                    self.myJson = JSON(data: dataFromString)
+                    //update model
+                    self.myDrawingView.reloadData()
+                    //print(self.myJson)
                 }
             }
-            
-            
         })
         
         dataTask.resume()
 
         
         
-        echoTest()
+        //echoTest()
     
         
         

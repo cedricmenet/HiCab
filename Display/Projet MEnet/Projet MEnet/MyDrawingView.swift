@@ -15,13 +15,13 @@ class MyDrawingView: UIView {
     // An empty implementation adversely affects performance during animation.
     
     var myViewDelegate : MyViewDelegate?
-    var str: String?
+    var mapJSON: JSON?
     
     
     func reloadData(){
         if myViewDelegate != nil {
-            str = myViewDelegate!.viewString()
-            print(str)
+            mapJSON = myViewDelegate!.JsonMap()
+            print(mapJSON)
         }
         self.setNeedsDisplay()
     }
