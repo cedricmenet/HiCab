@@ -29,38 +29,14 @@ class MyDrawingView: UIView {
         bpath.stroke()
         
         NSLog("drawRect has updated the view")
-        echoTest()
+        
+        self.setNeedsDisplay()
+        
+        
     }
     
     
-    func echoTest(){
-        var messageNum = 0
-        let ws = WebSocket("wss://echo.websocket.org")
-        let send : ()->() = {
-            let msg = "\(++messageNum): \(NSDate().description)"
-            print("send: \(msg)")
-            ws.send(msg)
-        }
-        ws.event.open = {
-            print("opened")
-            send()
-        }
-        ws.event.close = { code, reason, clean in
-            print("close")
-        }
-        ws.event.error = { error in
-            print("error \(error)")
-        }
-        ws.event.message = { message in
-            if let text = message as? String {
-                print("recv: \(text)")
-                if messageNum == 10 {
-                    ws.close()
-                } else {
-                    send()
-                }
-            }
-        }
-    }
+    
+    
 
 }
