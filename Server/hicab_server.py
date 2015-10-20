@@ -4,154 +4,11 @@ import json
 from threading import Thread, Lock
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
+from cab_manager import *
 
-####### CLASSES #######
-class Cab:
-	def __init__(self, id_cab, position, requests_queue):
-		self.id_cab = id_cab
-		self.position = position
-		self.destination = None
-		self.odometer = 0
-		self.is_busy = False
-		self.requests_queue = requests_queue
-		self.current_request = None
-	def get_status(self):
-		return str({"id_cab":self.id_cab,
-					"odometer":self.odometer,
-					"is_busy":self.is_busy,
-					"queue":len(self.requests_queue)})
-					
-	def get_position(self):
-		return str({"id_cab":self.id_cab,
-					"location":self.position})
-		
-class CabRequest:
-	def __init__(self, id_request, location):
-		self.id_request = id_request
-		self.location = location
-		
-class Localisation:
-	def __init__(self):
-		self.toto = None
-
-######## CHANNELS #######
-## CAB DEVICE : EMITTER ##
-class CabDeviceTransmitter(Thread):
-	def __init__(self, cab, ws):
-		Thread.__init__(self)
-		self.cab = cab
-		self.websocket = ws
-		self.on_air = True
-	def run(self):
-		while self.on_air:
-			try:
-				time.sleep(5)
-				status = self.cab.get_status()
-				print('[=> CabDevice#'+ str(self.cab.id_cab) +']: ' + status)
-				self.websocket.send(status)
-			except:
-				print('[XX CabDevice#'+ str(self.cab.id_cab) +']: Transmitter connection lost')
-				self.on_air = False
-
-## DISPLAY DEVICE : EMITTER ##
-class DisplayDeviceTransmitter(Thread):
-	def __init__(self, cabs, ws):
-		Thread.__init__(self)
-		self.websocket = ws
-		self.cabs = cabs
-		self.on_air = True
-	def run(self):
-		while self.on_air:
-			try:
-				time.sleep(5)
-				status = "{'cab_infos':["
-				for cab in self.cabs:
-					status += cab.get_position() + ","
-				if status[len(status) - 1] == ",":
-					status = status[0:-1]
-				status += "]}"
-				print('[=> DisplayDevice]: ' + status)
-				self.websocket.send(status)
-			except:
-			 	print('[XX DisplayDevice]: Transmitter connection lost')
-				self.on_air = False
-				
-## CAB DEVICE : LISTENER ##
-class CabDeviceListener(Thread):
-	def __init__(self, cab ,ws):
-		Thread.__init__(self)
-		self.cab = cab
-		self.websocket = ws
-		self.on_air = True
-	def run(self):
-		while self.on_air:
-			try:
-				message = self.websocket.receive()
-				print('[<= CabDevice#'+ str(self.cab.id_cab) +']: ' + message)
-			except:
-				print('[XX CabDevice#'+ str(self.cab.id_cab) +']: Listener connection lost')
-				self.on_air = False
-			if len(self.cab.requests_queue) > 0:
-				if json.loads(message)['is_accepted']:
-					self.cab.current_request = self.cab.requests_queue[0]
-					self.cab.is_busy = True
-					print('[<= CabDevice#'+ str(self.cab.id_cab) +']: Accept a cab request')
-				else:
-					print('[<= CabDevice#'+ str(self.cab.id_cab) +']: Refuse a cab request')
-				self.cab.requests_queue.remove(self.cab.requests_queue[0])
-				
-				
-## DISPLAY DEVICE : LISTENER ##
-class DisplayDeviceListener(Thread):
-	def __init__(self, requests_queue, ws):
-		Thread.__init__(self)
-		self.requests_queue = requests_queue
-		self.websocket = ws
-		self.on_air = True
-	def run(self):
-		while self.on_air:
-			try:
-				message = self.websocket.receive()
-				print('[<= DisplayDevice]: ' + message)
-			except:
-				print('[XX DisplayDevice]: Listener connection lost')
-				self.on_air = False
-			try:
-				new_req = CabRequest(len(self.requests_queue), json.loads(message)['location'])
-				self.requests_queue.append(new_req)
-				print('[!! DisplayDevice]: New request registered')
-			except:
-				print('[XX DisplayDevice]: Invalid message')
-				
-## CHANNEL CABDEVICE ##
-class CabDeviceChannel():
-	def __init__(self, cab, ws):
-		self.cab = cab
-		self.websocket = ws
-	def diffuse_channel(self):
-		thread_listener = CabDeviceListener(self.cab, self.websocket)
-		thread_transmitter = CabDeviceTransmitter(self.cab, self.websocket)
-		thread_listener.start()
-		thread_transmitter.start()
-		thread_listener.join()
-		thread_transmitter.join()
-		
-## CHANNEL DISPLAYDEVICE ##
-class DisplayDeviceChannel():
-	def __init__(self, cabs, requests_queue, ws):
-		self.cabs = cabs
-		self.requests_queue = requests_queue
-		self.websocket = ws
-	def diffuse_channel(self):
-		thread_listener = DisplayDeviceListener(self.requests_queue, self.websocket)
-		thread_transmitter = DisplayDeviceTransmitter(self.cabs, self.websocket)
-		thread_listener.start()
-		thread_transmitter.start()
-		thread_listener.join()
-		thread_transmitter.join()
-	
 ######## THREAD LOCKS #######
-cabs_lock = Lock()
+cab_lock = Lock()
+request_lock = Lock()
 
 ######## VARIABLES #######
 # Map
@@ -159,12 +16,16 @@ areas = [{'name': u'Quartier Nord','map': {'weight': {'w': 1,'h': 1},'vertices':
 
 # Liste de Cab
 cabs = []
-
 # Liste des CabRequest
 requests = []
 
-# Thread de déplacement
-thread = None
+#Liste des channel
+cab_channels = []
+display_channels = []
+
+# Demarrage du monitoring
+thread_monitor = CabMonitoring(cabs, requests, cab_channels, display_channels, cab_lock, request_lock)
+thread_monitor.start()
 	
 # Initialisation de Flask
 app = Flask(__name__, static_url_path='')
@@ -172,15 +33,18 @@ app.debug = True
 app.config['SECRET_KEY'] = 'secret!'
 sockets = Sockets(app)
 
-####### BACKGROUND #######
+# Thread de déplacement
+thread_move = None
+
 # Thread de déplacement des cabs
 def cabs_move_thread():
 	while True:
 		time.sleep(5)
-		cabs_lock.acquire()
+		cab_lock.acquire()
 		for cab in cabs:
+			#if cab.is_busy:
 			cab.odometer += 1
-		cabs_lock.release()
+		cab_lock.release()
 
 ####### WEBSERVER #######
 # Page de test des WebSockets
@@ -217,67 +81,70 @@ def get_map():
 # Inscription d'un taxis
 @app.route('/subscribe/cab')
 def subscribe_cab():
-	cabs_lock.acquire()
-	new_cab = Cab(len(cabs), None, requests)
+	cab_lock.acquire()
+	new_cab = Cab(len(cabs), None)
 	cabs.append(new_cab)
 	response = {'id_cab': new_cab.id_cab,
 				'channel': u'cab_device' }
-	cabs_lock.release()
-	print ('[!! Subscribe] Cab #' + str(new_cab.id_cab) + ' registered')
+	cab_lock.release()
+	print ('[<= Subscribe] Cab #' + str(new_cab.id_cab) + ' registered')
 	return jsonify(response)
 	
 # Inscription d'un nouvel afficheur
 @app.route('/subscribe/display')
 def subscribe_display():
 	response = {'channel': u'display_device'}
-	print ('[!! Subscribe] New display registered')
+	print ('[<= Subscribe] New display registered')
 	return jsonify(response)
 	
 # Demarrage de la simulation des taxis
 @app.route('/simulation/start_move')
 def move_cabs():
-	global thread
-	if thread is None:
-		thread = Thread(target=cabs_move_thread)
-		thread.start()
-		print('[Simulation] Start move')
+	global thread_move
+	if thread_move is None:
+		thread_move = Thread(target=cabs_move_thread)
+		thread_move.start()
+		print('[.. Simulation] Start move')
 	return ''
 
 ####### WEBSOCKET #######
 # Gestion des channels cab_device
 @sockets.route('/cab_device')
 def channel_cab_device(ws):
+	print("[<= CabDevice]: New cab connected")
 	is_open = True
 	cab = None
-	#on recupere l'ID du cab
+	# Récupération de l'ID du cab sur un 1er échange
 	try:
 		message = ws.receive()
-		print('[!! CabDevice] Starting channel with: ' + message)
+		print('[<= CabDevice] Starting channel with: ' + message)
 		id_cab = int(json.loads(message)['id_cab'])
 		cab = cabs[id_cab]
 	except:
 		print('[XX CabDevice] Error: Invalid "id_cab" received')
 		is_open = False
-	if is_open:	
-		channel = CabDeviceChannel(cab, ws)
-		channel.diffuse_channel()
+	if is_open:
+		# Création du channel
+		channel = ChannelCab(cab, requests, ws, cab_lock, request_lock)
+		cab_channels.append(channel)
+		# On marque le cab "changed" pour forcer un premier envoi par le monitor
+		cab_lock.acquire()
+		cab.has_changed = True
+		cab_lock.release()
+		# Mise en écoute du channel
+		channel.listen()
 
 # Gestion des channels display_device
 @sockets.route('/display_device')
 def channel_display_device(ws):
-	channel = DisplayDeviceChannel(cabs, requests, ws)
-	channel.diffuse_channel()
-
-# Echo (pour test)
-@sockets.route('/echo')
-def echo_socket(ws):
-	is_open = True
-	while is_open:
-		try:
-			message = ws.receive()
-			if message is not None:
-				print('WEBSOCKET - - Echoed message: ' + message)
-				ws.send(message)
-		except:
-			print('WEBSOCKET - - Connection closed')
-			is_open = False
+	print("[<= DisplayDevice]: New display connected")
+	# Création du channel
+	channel = ChannelDisplay(requests, ws, request_lock)
+	display_channels.append(channel)
+	# On marque les cabs "changed" pour forcer un premier envoi par le monitor
+	cab_lock.acquire()
+	for cab in cabs:
+		cab.has_changed = True
+	cab_lock.release()
+	# Mise en écoute du channel
+	channel.listen()
