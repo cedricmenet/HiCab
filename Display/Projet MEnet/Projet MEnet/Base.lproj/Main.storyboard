@@ -51,7 +51,7 @@
                                 <rect key="frame" x="285" y="232" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
-                                    <segue destination="BYZ-38-t0r" kind="show" id="xEW-de-vUP"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="testSegue" id="xEW-de-vUP"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8km-Gg-Z7K">

@@ -78,5 +78,18 @@ class FirstViewController: UIViewController,UITextFieldDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+        if (segue.identifier == "testSegue") {
+            var svc = segue.destinationViewController as! ViewController;
+            
+            svc.toPass = IDMapTextField.text!
+            
+        }
+    }
+    
+    
+    
 
 }
