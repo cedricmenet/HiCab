@@ -1,0 +1,85 @@
+{
+	"areas": [{
+		"name": "Quartier Nord",
+		"map": {
+			"weight": {
+				"w": 1,
+				"h": 1
+			},
+			"vertices": [{
+				"name": "m",
+				"x": 0.5,
+				"y": 0.5
+			},
+			{
+				"name": "b",
+				"x": 0.5,
+				"y": 1
+			}],
+			"streets": [{
+				"name": "mb",
+				"path": ["m",
+				"b"],
+				"oneway": false
+			}],
+			"bridges": [{
+				"from": "b",
+				"to": {
+					"area": "Quartier Sud",
+					"vertex": "h"
+				},
+				"weight": 2
+			}]
+		}
+	},
+	{
+		"name": "Quartier Sud",
+		"map": {
+			"weight": {
+				"w": 1,
+				"h": 1
+			},
+			"vertices": [{
+				"name": "a",
+				"x": 1,
+				"y": 1
+			},
+			{
+				"name": "m",
+				"x": 0,
+				"y": 1
+			},
+			{
+				"name": "h",
+				"x": 0.5,
+				"y": 0
+			}],
+			"streets": [{
+				"name": "ah",
+				"path": ["a",
+				"h"],
+				"oneway": false
+			},
+			{
+				"name": "mh",
+				"path": ["m",
+				"h"],
+				"oneway": true
+			},
+			{
+				"name": "am",
+				"path": ["a",
+				"m"],
+				"oneway": true
+			}],
+			"bridges": [{
+				"from": "h",
+				"to": {
+					"area": "Quartier Nord",
+					"vertex": "b"
+				},
+				"weight": 2
+			}]
+		}
+	}]
+}
