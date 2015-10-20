@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import random
 from math import sqrt
 from dijkstra import *
 
@@ -107,6 +108,15 @@ def convert_to_loc(areas, start_encode, stop_encode):
         # Recherche de pont
         return get_bridge(vertex_name_a, vertex_name_b, area_name_a, area_name_b, areas)
 
+# Obtient une position aléatoire sur la map
+def get_random_street(json_map):
+    areas = json_map['areas']
+    streets = areas[random.randrange(len(areas))]['map']['streets']
+    street = streets[random.randrange(len(streets))]
+    street['progression'] = random.random()
+    return street
+
+
 # Obtient le chemin le plus court
 def get_path(json_map, start, end):
     graph = get_graph(json_map)
@@ -126,3 +136,5 @@ path = get_path(json_map, start, end)
 print(path)
 save_file("path.txt", str(path))
 """
+json_map = load_map()
+print get_random_street(json_map)
