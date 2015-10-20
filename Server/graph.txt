@@ -1,1 +1,0 @@
-{u'h@Quartier Sud': {u'a@Quartier Sud': 1.4142135623730951, u'b@Quartier Nord': 2}, u'a@Quartier Sud': {u'h@Quartier Sud': 1.4142135623730951, u'm@Quartier Sud': 1.4142135623730951}, u'b@Quartier Nord': {u'h@Quartier Sud': 2, u'm@Quartier Nord': 0.7071067811865476}, u'm@Quartier Nord': {u'b@Quartier Nord': 0.7071067811865476}, u'm@Quartier Sud': {u'h@Quartier Sud': 0.0}}
