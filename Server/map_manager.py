@@ -16,8 +16,8 @@ def save_file(filename, data):
         data_file.write(data)
     
 # Charge la map dans map.json
-def load_map():
-    json_map = get_data_from_file('map.json')
+def load_map(filename):
+    json_map = get_data_from_file(filename)
     json_map = add_weight_on_streets(json_map)
     return json_map
 

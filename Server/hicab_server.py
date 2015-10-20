@@ -4,7 +4,7 @@ import json
 from threading import Thread, Lock
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
-from cab_manager import *
+from cab_manager import load_map
 from map_manager import *
 
 ######## THREAD LOCKS #######
@@ -13,7 +13,7 @@ request_lock = Lock()
 
 ######## VARIABLES #######
 # Map
-json_map = load_map()
+json_map = load_map('map.json')
 
 # Liste de Cab
 cabs = []
@@ -83,7 +83,7 @@ def get_map():
 @app.route('/subscribe/cab')
 def subscribe_cab():
 	cab_lock.acquire()
-	new_cab = Cab(len(cabs), None)
+	new_cab = Cab(len(cabs), json_map)
 	cabs.append(new_cab)
 	response = {'id_cab': new_cab.id_cab,
 				'channel': u'cab_device' }

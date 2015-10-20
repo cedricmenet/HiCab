@@ -2,17 +2,19 @@
 import time
 import json
 from threading import Thread, Lock
+from map_manager import *
 
 # Représente un taxi
 class Cab(object):
-	def __init__(self, id_cab, position):
+	def __init__(self, id_cab, json_map):
 		self.id_cab = id_cab
-		self.position = position
-		self.destination = None
+		self.position = get_random_street(json_map)
 		self.odometer = 0
 		self.is_busy = False
 		self.current_request = None
 		self.has_changed = False
+		self.path = []
+		self.json_map = json_map
 
 	# Permet d'accepter ou refuser une requête
 	def handle_request(self,requests_queue, accepted):
