@@ -14,6 +14,18 @@ class MyDrawingView: UIView {
     // Only override drawRect: if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.
     
+    var myViewDelegate : MyViewDelegate?
+    var str: String?
+    
+    
+    func reloadData(){
+        if myViewDelegate != nil {
+            str = myViewDelegate!.viewString()
+            print(str)
+        }
+        self.setNeedsDisplay()
+    }
+    
     
     override func drawRect(rect: CGRect) {
         // Drawing code
@@ -29,8 +41,6 @@ class MyDrawingView: UIView {
         bpath.stroke()
         
         NSLog("drawRect has updated the view")
-        
-        self.setNeedsDisplay()
         
         
     }

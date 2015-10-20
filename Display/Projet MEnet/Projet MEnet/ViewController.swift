@@ -8,8 +8,19 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+
+protocol MyViewDelegate {
+    func viewString() -> String;
+}
+
+class ViewController: UIViewController, MyViewDelegate{
     
+    
+    func viewString() -> String {
+        return "blabla"
+    }
+    
+    @IBOutlet weak var myDrawingView: MyDrawingView!
     var toPass:String = ""
 
     override func viewDidLoad() {
@@ -17,9 +28,18 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         print(toPass)
         
+        
+        myDrawingView.myViewDelegate = self
+        self.view.addSubview(myDrawingView)
         echoTest()
         
+        
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        myDrawingView.reloadData()
+    }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -42,6 +62,7 @@ class ViewController: UIViewController {
         }
         ws.event.close = { code, reason, clean in
             print("close")
+            self.myDrawingView.reloadData()
         }
         ws.event.error = { error in
             print("error \(error)")
@@ -57,6 +78,10 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    
+    
+    
 
     
 
