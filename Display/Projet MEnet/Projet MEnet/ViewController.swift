@@ -31,7 +31,40 @@ class ViewController: UIViewController, MyViewDelegate{
         
         myDrawingView.myViewDelegate = self
         self.view.addSubview(myDrawingView)
+        
+        
+        let url : NSURL? = NSURL(string: "http://192.168.1.1/getmap")
+        let session = NSURLSession.sharedSession()
+        let dataTask = session.dataTaskWithURL((url)!, completionHandler: { (data: NSData?, response:NSURLResponse?,
+            error: NSError?) -> Void in
+            //do something
+            print("hi")
+            //print(NSString(data: data!, encoding: NSUTF8StringEncoding))
+            
+            
+            if error != nil {
+                print(error)
+                // handle error
+            } else {
+                // data has a length of 2523 - the contents at the url
+                if let httpRes = response as? NSHTTPURLResponse {
+                    // httpRes is 200
+                    let html = NSString(data:data!, encoding:NSUTF8StringEncoding)
+                    print(html)
+                    // **** html is nil ****
+                }
+            }
+            
+            
+        })
+        
+        dataTask.resume()
+
+        
+        
         echoTest()
+    
+        
         
         
     }
