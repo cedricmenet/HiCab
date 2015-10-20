@@ -5,6 +5,7 @@ from threading import Thread, Lock
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
 from cab_manager import *
+from map_manager import *
 
 ######## THREAD LOCKS #######
 cab_lock = Lock()
@@ -12,7 +13,7 @@ request_lock = Lock()
 
 ######## VARIABLES #######
 # Map
-areas = [{'name': u'Quartier Nord','map': {'weight': {'w': 1,'h': 1},'vertices': [{'name': u'm','x': 0.5,'y': 0.5},{'name': u'b','x': 0.5,'y': 1}],'streets': [{'name': u'mb','path': [u'm',u'b'],'oneway': False}],'bridges': [{'from': u'b','to': {'area': u'Quartier Sud','vertex': u'h'},'weight': 2}]}},{'name': u'Quartier Sud','map': {'weight': {'w': 1,'h': 1},'vertices': [{'name': u'a','x': 1,'y': 1},{'name': u'm','x': 0,'y': 1},{'name': u'h','x': 0.5,'y': 0}],'streets': [{'name': u'ah','path': [u'a',u'h'],'oneway': False},{'name': u'mh','path': [u'm',u'h'],'oneway': False}],'bridges': [{'from': u'h','to': {'area': u'Quartier Nord','vertex': u'b'},'weight': 2}]}}]
+json_map = load_map()
 
 # Liste de Cab
 cabs = []
@@ -76,7 +77,7 @@ def send_index():
 # Renvoi la map
 @app.route('/getmap')
 def get_map():
-	return jsonify({'areas':areas})
+	return jsonify(json_map)
 	
 # Inscription d'un taxis
 @app.route('/subscribe/cab')
