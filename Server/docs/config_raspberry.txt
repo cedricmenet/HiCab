@@ -73,6 +73,7 @@ Installation de python2.7 et packages
 	sudo pip install Flask
 	sudo pip install flask-socketio
 	sudo pip install Flask-Sockets
+	sudo apt-get install gunicorn
 	
 Tutos et exemple:
 	http://www.instructables.com/id/Python-Web-Server-for-your-Raspberry-Pi/?ALLSTEPS
