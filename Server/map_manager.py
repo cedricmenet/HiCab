@@ -110,7 +110,6 @@ def convert_to_loc(areas, start_encode, stop_encode):
 # Obtient le chemin le plus court
 def get_path(json_map, start, end):
     graph = get_graph(json_map)
-    print graph
     path_encode = dij_rec(graph,start,end)['path']
     path = []
     for i in range(len(path_encode) - 1):
