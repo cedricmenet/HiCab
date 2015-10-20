@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from math import sqrt
+from dijkstra import *
 
 def get_data_from_json(filename):
     with open(filename) as data_file:    
@@ -47,7 +48,7 @@ def get_vertex(vertex_name, map_data):
                    
 def get_weight(vertex_a, vertex_b):
     return sqrt(vertex_a['x']**2 + vertex_a['x']**2)
-    
+
 
 ## MAIN TEST
 json_map = get_data_from_json('map.json')
@@ -56,3 +57,8 @@ graph = get_graph(json_map)
 print("")
 print("graph = " + str(graph))
 save_file("graph.txt", str(graph))
+start = "a@Quartier Sud"
+end = "m@Quartier Nord"
+path = dij_rec(graph,start,end)
+print("")
+print(path)
