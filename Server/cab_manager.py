@@ -91,7 +91,7 @@ class CabMonitoring(Thread):
 			self.cab_lock.release()
 			self.request_lock.release()
 			# Temporisation 
-			time.sleep(1)
+			time.sleep(0.2)
 	
 	# Arrêt du thread de monitoring
 	def stop_monitoring(self):
