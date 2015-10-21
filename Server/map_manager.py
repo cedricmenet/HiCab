@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
-import random
+import json, copy, random
 from math import sqrt
 from dijkstra import *
 
@@ -18,18 +17,19 @@ def save_file(filename, data):
 # Charge la map dans map.json
 def load_map(filename):
     json_map = get_data_from_file(filename)
-    json_map = add_weight_on_streets(json_map)
+    json_map = add_infos_streets(json_map)
     return json_map
 
-# Ajout de la pondération sur les rues
-def add_weight_on_streets(json_map):
+# Ajout de la pondération et le nom des area sur les rues
+def add_infos_streets(json_map):
     for area in json_map['areas']:
         for street in area['map']['streets']:
             vertex_a = get_vertex(street['path'][0], area['map'])
             vertex_b = get_vertex(street['path'][1], area['map'])
             street['weight'] =  get_weight(vertex_a, vertex_b)
+            street['area'] = area['name']
     return json_map
-  
+ 
 # Construction d'un graph pondéré
 def get_graph(json_map):
     g={}
@@ -112,29 +112,29 @@ def convert_to_loc(areas, start_encode, stop_encode):
 def get_random_street(json_map):
     areas = json_map['areas']
     streets = areas[random.randrange(len(areas))]['map']['streets']
-    street = streets[random.randrange(len(streets))]
+    street = copy.copy(streets[random.randrange(len(streets))])
     street['progression'] = random.random()
     return street
 
 
 # Obtient le chemin le plus court
-def get_path(json_map, start, end):
+def get_path(json_map, street_start, street_end):
+    start_encode = street_start["path"][1] + "@" + street_start["area"]
+    end_encode = street_end["path"][0] + "@" + street_end["area"]
     graph = get_graph(json_map)
-    path_encode = dij_rec(graph,start,end)['path']
+    path_encode = dij_rec(graph,start_encode,end_encode)['path']
     path = []
+    path.append(street_start)
     for i in range(len(path_encode) - 1):
         loc = convert_to_loc(json_map['areas'], path_encode[i], path_encode[i+1])
         path.append(loc)
+    path.append(street_end)
     return path
 
 ## MAIN TEST
 """
-json_map = load_map()
-start = "a@Quartier Sud"
-end = "m@Quartier Nord"
-path = get_path(json_map, start, end)
-print(path)
-save_file("path.txt", str(path))
+json_map = load_map("map.json")
+start = get_random_street(json_map)
+stop = get_random_street(json_map)
+print get_path(json_map, start, stop)
 """
-json_map = load_map()
-print get_random_street(json_map)
