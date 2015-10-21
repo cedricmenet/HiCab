@@ -128,8 +128,23 @@
 	Format: JSON
 	Data:
 	{
-		location: LocVertex | LocStreet
+		"location": {
+			"backward": false,
+			"name": "am",
+			"weight": 1.0,
+			"area": "Quartier Sud",
+			"loc_type": "street",
+			"path": ["a",
+			"m"],
+			"oneway": true,
+			"progression": 1,
+			"coord": {
+				"y": 1,
+				"x": 0
+			}
+		}
 	}
+
 	
 	---- RESPONSE ----
 	Empty
