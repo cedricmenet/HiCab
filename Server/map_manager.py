@@ -20,6 +20,46 @@ def load_map(filename):
     json_map = add_infos_on_map(json_map)
     return json_map
 
+def get_coord(location, json_map):
+    if location['loc_type'] == "street":
+        return get_coord_on_street(location, json_map)
+    elif location['loc_type'] == "bridge":
+        return get_coord_on_bridge(location, json_map)
+    return None
+
+def get_coord_on_bridge(bridge, json_map):
+    coord = {}
+    if not bridge == None:
+        area = get_area(bridge['area'], json_map['areas'])
+        vertex = get_vertex(bridge['from'], area['map'])
+        coord['x'] = vertex["x"]
+        coord['y'] = vertex["y"]
+    return coord
+    
+def get_coord_on_street(street, json_map):
+    coord = {}
+    if not street == None:
+        backward = False
+        if "backward" in street:
+            backward = street['backward']
+        vertex_a = None
+        vertex_b = None
+        area = get_area(street['area'], json_map['areas'])
+        progress = street['progression']
+        if not backward:
+            vertex_a = get_vertex(street['path'][0], area['map'])
+            vertex_b = get_vertex(street['path'][1], area['map'])
+        else:
+            vertex_a = get_vertex(street['path'][1], area['map'])
+            vertex_b = get_vertex(street['path'][0], area['map'])
+        # Made in Feth
+        #coord['x'] = (1.0 - progress) * vertex_a["x"] + progress * vertex_b["x"]
+        #coord['y'] = (1.0 - progress) * vertex_a["y"] + progress * vertex_b["y"]
+        # Made in Cedric
+        coord['x'] = vertex_a["x"] + progress * (vertex_b["x"] - vertex_a["x"])
+        coord['y'] = vertex_a["y"] + progress * (vertex_b["y"] - vertex_a["y"])
+    return coord
+
 # Ajout de la pondération et le nom des area sur les rues et les bridges
 def add_infos_on_map(json_map):
     for area in json_map['areas']:
@@ -28,9 +68,11 @@ def add_infos_on_map(json_map):
             vertex_b = get_vertex(street['path'][1], area['map'])
             street['weight'] =  get_weight(vertex_a, vertex_b)
             street['area'] = area['name']
+            street['loc_type'] = "street"
         for bridge in area['map']['bridges']:
             bridge['area'] = area['name']
             bridge['name'] = "from:" + bridge['from'] + "_to:" + bridge['to']['vertex'] + "@" + bridge['to']['area']
+            bridge['loc_type'] = "bridge"
     return json_map
  
 # Construction d'un graph pondéré
@@ -78,8 +120,14 @@ def get_area(area_name, areas_data):
 # Récupère une street selon les noms des deux vertices
 def get_street(vertex_name_a, vertex_name_b, map_data):
     for street in map_data['streets']:
-        if vertex_name_a in street['path'] and vertex_name_b in street['path']:
-            return street
+        if vertex_name_a == street['path'][0] and vertex_name_b == street['path'][1]:
+            new_street = copy.copy(street)
+            new_street['backward'] = False
+            return new_street
+        elif not street['oneway'] and vertex_name_a == street['path'][1] and vertex_name_b == street['path'][0]:
+            new_street = copy.copy(street)
+            new_street['backward'] = True
+            return new_street
     return None
 
 # Récupère un pont 
@@ -92,7 +140,7 @@ def get_bridge(vertex_name_a, vertex_name_b, area_name_a, area_name_b, areas):
         
 # Calcul le poid entre deux vertices
 def get_weight(vertex_a, vertex_b):
-    return sqrt((vertex_a['x']*1.0)**2 + (vertex_a['x']*1.0)**2)
+    return sqrt(((vertex_a['x']-vertex_b['x'])*1.0)**2 + ((vertex_a['y']-vertex_b['y'])*1.0)**2)
     
 # Renvoi le chemin réel entre 2 vertex "encodé"
 def convert_to_loc(areas, start_encode, stop_encode):
