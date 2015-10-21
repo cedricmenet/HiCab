@@ -30,6 +30,7 @@ class Cab(object):
 				print('[.. CabDevice#'+ str(self.id_cab) +']: Refuse a cab request')
 			# On retire la requête de la liste
 			requests_queue.remove(requests_queue[0])
+			self.has_changed = True
 	
 	# Observe si des changements sont apportés à l'instance et set la propriété "has_changed"
 	def __setattr__(self, name, value):
