@@ -39,7 +39,7 @@
                     cabs = eval("(" + evt.data.replace(/False/g,"false").replace(/True/g, "true").replace(/None/g, "null") + ')')
                     $('#cabs').text("");
                     cabs['cab_infos'].forEach(function(data) {
-                        $('#cabs').append("<li>Cab#" + data["id_cab"] + "<br/></li>");
+                        $('#cabs').append("<li>Cab#" + data["id_cab"] + "<br/>Localisation</br>  Type: " + data["location"]["loc_type"] + "<br/>  Name: " + data["location"]["name"] + "</br>  Backward: " + data["location"]["backward"] + "</br>  Progress: " + (data["location"]["progression"]*100).toFixed(2) + " %</br>  x: " + (data["location"]["coord"]["x"]).toFixed(2) + "</br>  y: " + (data["location"]["coord"]["y"]).toFixed(2) + "</li>");
                     });
                 }
                 return false;
