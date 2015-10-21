@@ -149,13 +149,12 @@ class CabMonitoring(Thread):
 	# Envoi des infos vers les display_device inscrits
 	def send_to_displays(self):
 		# Construction du message
-		message = "{'cab_infos':["
+		message = {}
+		message['cab_infos'] = []
 		for cab in self.cabs:
-			message += str({"id_cab":cab.id_cab,
-						   "location":cab.position}) + ","
-		if message[len(message) - 1] == ",":
-			message = message[0:-1]
-		message += "]}"
+			new_info = {"id_cab":cab.id_cab,
+						"location":cab.position}
+			message['cab_infos'].append(new_info)
 		# Envoi sur les display_channels associés
 		for channel in self.display_channels:
 			channel.send(message)
