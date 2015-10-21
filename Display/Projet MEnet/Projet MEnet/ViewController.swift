@@ -192,13 +192,10 @@ class ViewController: UIViewController, MyViewDelegate{
                         if(shouldreverse == 1){
                             progression = 1 - progression
                         }
-                        
                         bestD = d
                         nearestStreet = subJson
                         bestDist = dist
                     }
-                
-                
             }
             
         }

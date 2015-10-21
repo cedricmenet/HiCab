@@ -50,20 +50,33 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ubp-9Y-6mA">
-                                <rect key="frame" x="285" y="232" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <segue destination="BYZ-38-t0r" kind="show" identifier="testSegue" id="xEW-de-vUP"/>
-                                </connections>
-                            </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8km-Gg-Z7K">
-                                <rect key="frame" x="180" y="232" width="97" height="30"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="OBd-QO-Pn7">
+                                <rect key="frame" x="255" y="270" width="90" height="60"/>
+                                <subviews>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8km-Gg-Z7K">
+                                        <rect key="frame" x="0.0" y="0.0" width="90" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ubp-9Y-6mA">
+                                        <rect key="frame" x="0.0" y="30" width="90" height="30"/>
+                                        <state key="normal" title="SelectMap id"/>
+                                        <connections>
+                                            <segue destination="BYZ-38-t0r" kind="show" identifier="testSegue" id="xEW-de-vUP"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="ubp-9Y-6mA" firstAttribute="height" secondItem="8km-Gg-Z7K" secondAttribute="height" id="8d9-s5-bMK"/>
+                                    <constraint firstItem="ubp-9Y-6mA" firstAttribute="width" secondItem="8km-Gg-Z7K" secondAttribute="width" id="xSi-fG-l1M"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="OBd-QO-Pn7" firstAttribute="centerY" secondItem="cIY-nP-os0" secondAttribute="centerY" id="237-lu-tGa"/>
+                            <constraint firstItem="OBd-QO-Pn7" firstAttribute="centerX" secondItem="cIY-nP-os0" secondAttribute="centerX" id="Ed6-iE-KPp"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="IDMapTextField" destination="8km-Gg-Z7K" id="2G3-g1-Xu9"/>
