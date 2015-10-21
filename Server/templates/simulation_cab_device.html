@@ -45,11 +45,6 @@
                 socket.send(JSON.stringify(message));
                 return false;
             });
-            // Envoi message
-			$('form#send').submit(function(event) {
-                socket.send($('#send_data').val());
-                return false;
-            });
             // Deconnection
 			$('form#disconnect').submit(function(event) {
                 socket.close();
@@ -77,10 +72,6 @@
     </form>
     <form id="request_refuse" method="POST" action="">
         <input type="submit" value="Refuse request">
-    </form>
-    <form id="send" method="POST" action="">
-        <input type="text" name="send" id="send_data" placeholder="Message">
-        <input type="submit" value="Send">
     </form>
     <form id="disconnect" method="POST" action="">
         <input type="submit" value="Disconnect">
