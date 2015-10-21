@@ -28,7 +28,7 @@
 					"area": "Quartier Sud",
 					"vertex": "h"
 				},
-				"weight": 2
+				"weight": 0.3
 			}]
 		}
 	},
@@ -78,7 +78,7 @@
 					"area": "Quartier Nord",
 					"vertex": "b"
 				},
-				"weight": 2
+				"weight": 0.3
 			}]
 		}
 	}]
