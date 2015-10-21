@@ -17,11 +17,13 @@ class MyDrawingView: UIView {
     var myViewDelegate : MyViewDelegate?
     var mapJSON: JSON = []
     
+    var mapId:IntegerLiteralType = 0
+    
     
     func reloadData(){
         if myViewDelegate != nil {
             mapJSON = myViewDelegate!.JsonMap()
-            print(mapJSON["areas"][0]["map"]["vertices"][0]["name"].string)
+            print(mapJSON["areas"][mapId]["map"]["vertices"][0]["name"].string)
         }
         
         dispatch_async(dispatch_get_main_queue()) {
@@ -48,12 +50,12 @@ class MyDrawingView: UIView {
         }*/
         
         
-        for (key,subJson):(String, JSON) in mapJSON["areas"][0]["map"]["streets"] {
+        for (key,subJson):(String, JSON) in mapJSON["areas"][mapId]["map"]["streets"] {
             //Do something you want
             
             //dessin des rues
-            let vertexA = getVertexByName(subJson["path"][0].string!, vertices: mapJSON["areas"][0]["map"]["vertices"])
-            let vertexB = getVertexByName(subJson["path"][1].string!, vertices: mapJSON["areas"][0]["map"]["vertices"])
+            let vertexA = getVertexByName(subJson["path"][0].string!, vertices: mapJSON["areas"][mapId]["map"]["vertices"])
+            let vertexB = getVertexByName(subJson["path"][1].string!, vertices: mapJSON["areas"][mapId]["map"]["vertices"])
             
             print("vertexA")
             print(vertexA)
@@ -79,7 +81,7 @@ class MyDrawingView: UIView {
             
             
         }
-        for (key,subJson):(String, JSON) in mapJSON["areas"][0]["map"]["vertices"] {
+        for (key,subJson):(String, JSON) in mapJSON["areas"][mapId]["map"]["vertices"] {
             
             
             let fieldFont = UIFont(name: "Helvetica Neue", size: 18)
@@ -104,7 +106,7 @@ class MyDrawingView: UIView {
             
             drect = CGRectMake(x-25, y-25, 50, 50)
             let path = UIBezierPath(ovalInRect: drect)
-            UIColor.blueColor().setFill()
+            UIColor.greenColor().setFill()
             path.fill()
             
             
@@ -125,7 +127,7 @@ class MyDrawingView: UIView {
         }*/
         
         
-        if(mapJSON["areas"][0]["map"]["vertices"][0]["name"].string != "m"){
+        /*if(mapJSON["areas"][0]["map"]["vertices"][0]["name"].string != "m"){
             drect = CGRect(x: (w * 0.5),y: (h * 0.25),width: (w * 0.5),height: (h * 0.5))
             let path = UIBezierPath(ovalInRect: drect)
             UIColor.greenColor().setFill()
@@ -171,7 +173,7 @@ class MyDrawingView: UIView {
         let bpath:UIBezierPath = UIBezierPath(rect: drect)
         
         color.set()
-        bpath.stroke()
+        bpath.stroke()*/
         
         NSLog("drawRect has updated the view")
         

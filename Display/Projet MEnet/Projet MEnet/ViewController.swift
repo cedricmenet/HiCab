@@ -31,7 +31,15 @@ class ViewController: UIViewController, MyViewDelegate{
         
         
         myDrawingView.myViewDelegate = self
-        self.view.addSubview(myDrawingView)
+        if(toPass.isEmpty){
+            myDrawingView.mapId = 0
+
+        }
+        else{
+            myDrawingView.mapId = IntegerLiteralType( toPass)!
+
+        }
+                self.view.addSubview(myDrawingView)
         
         
         let url : NSURL? = NSURL(string: "http://192.168.1.1/getmap")

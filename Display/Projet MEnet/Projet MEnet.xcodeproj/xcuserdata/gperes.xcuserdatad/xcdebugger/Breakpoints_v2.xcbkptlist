@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Projet MEnet/ViewController.swift"
-            timestampString = "467043497.385746"
+            timestampString = "467109648.9349"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
+            startingLineNumber = "77"
+            endingLineNumber = "77"
             landmarkName = "viewDidLoad()"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Projet MEnet/ViewController.swift"
-            timestampString = "467043497.385746"
+            timestampString = "467109648.9349"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "viewDidLoad()"
             landmarkType = "5">
          </BreakpointContent>
@@ -134,7 +134,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Projet MEnet/MyDrawingView.swift"
@@ -147,7 +147,7 @@
             landmarkType = "3">
             <Locations>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "Projet_MEnet.MyDrawingView.init (Projet_MEnet.MyDrawingView.Type)(frame : C.CGRect) -&gt; Projet_MEnet.MyDrawingView"
@@ -162,7 +162,7 @@
                   offsetFromSymbolStart = "63">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "Projet_MEnet.MyDrawingView.init (Projet_MEnet.MyDrawingView.Type)(coder : ObjectiveC.NSCoder) -&gt; Swift.Optional&lt;Projet_MEnet.MyDrawingView&gt;"
@@ -186,11 +186,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Projet MEnet/MyDrawingView.swift"
-            timestampString = "467108971.5445"
+            timestampString = "467109511.578069"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "drawRect(_:)"
             landmarkType = "5">
          </BreakpointContent>
