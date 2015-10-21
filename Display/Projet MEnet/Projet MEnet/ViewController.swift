@@ -11,6 +11,7 @@ import UIKit
 
 protocol MyViewDelegate {
     func JsonMap() -> JSON;
+    func JsonCab() -> JSON;
 }
 
 class ViewController: UIViewController, MyViewDelegate{
@@ -19,10 +20,16 @@ class ViewController: UIViewController, MyViewDelegate{
     func JsonMap() -> JSON {
         return self.myJson
     }
+    func JsonCab() -> JSON {
+        return self.myCab
+    }
+    
     
     @IBOutlet weak var myDrawingView: MyDrawingView!
     var toPass:String = ""
     var myJson : JSON = []
+    var myCab : JSON = []
+    var channel:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,7 +78,7 @@ class ViewController: UIViewController, MyViewDelegate{
 
         
         
-        //echoTest()
+        startWs()
     
         
         
@@ -90,35 +97,76 @@ class ViewController: UIViewController, MyViewDelegate{
     
     
     
-    func echoTest(){
-        var messageNum = 0
-        let ws = WebSocket("wss://echo.websocket.org")
-        let send : ()->() = {
-            let msg = "\(++messageNum): \(NSDate().description)"
-            print("send: \(msg)")
-            ws.send(msg)
-        }
-        ws.event.open = {
-            print("opened")
-            send()
-        }
-        ws.event.close = { code, reason, clean in
-            print("close")
-            self.myDrawingView.reloadData()
-        }
-        ws.event.error = { error in
-            print("error \(error)")
-        }
-        ws.event.message = { message in
-            if let text = message as? String {
-                print("recv: \(text)")
-                if messageNum == 10 {
-                    ws.close()
-                } else {
-                    send()
+    func startWs(){
+        
+        
+        let url : NSURL? = NSURL(string: "http://192.168.1.1/subscribe/display")
+        let session = NSURLSession.sharedSession()
+        let dataTask = session.dataTaskWithURL((url)!, completionHandler: { (data: NSData?, response:NSURLResponse?,
+            error: NSError?) -> Void in
+            //do something
+            print("hi")
+            //print(NSString(data: data!, encoding: NSUTF8StringEncoding))
+            
+            
+            if error != nil {
+                print(error)
+                // handle error
+            }
+            else{
+                
+                let data_str = NSString(data:data!, encoding:NSUTF8StringEncoding)
+                if let dataFromString = data_str!.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                    let channelJSON = JSON(data: dataFromString)
+                    self.channel = channelJSON["channel"].string!
+                    
+                    
+                    
+                    print("channel : \(self.channel)")
+                    
+                    
+                    var messageNum = 0
+                    let ws = WebSocket("ws://192.168.1.1/\(self.channel)")
+                    let send : ()->() = {
+                        let msg = "\(++messageNum): \(NSDate().description)"
+                        print("send: \(msg)")
+                        ws.send(msg)
+                    }
+                    ws.event.open = {
+                        print("opened")
+                        //send()
+                    }
+                    ws.event.close = { code, reason, clean in
+                        print("close , \(code), \(reason)")
+                        //self.myDrawingView.reloadData()
+                    }
+                    ws.event.error = { error in
+                        print("error \(error)")
+                    }
+                    ws.event.message = { message in
+                        if let text = message as? String {
+                            //print("recv: \(text)")
+                            
+                            let dataFromString = text.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+                            self.myCab = JSON(data: dataFromString!)
+                            
+                            self.myDrawingView.updateCab()
+                            
+                            if messageNum == 10 {
+                                ws.close()
+                            } else {
+                                //send()
+                            }
+                        }
+                    }
                 }
             }
-        }
+        })
+        
+        dataTask.resume()
+        
+        
+        
     }
     
     

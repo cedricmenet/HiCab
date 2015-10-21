@@ -16,6 +16,7 @@ class MyDrawingView: UIView {
     
     var myViewDelegate : MyViewDelegate?
     var mapJSON: JSON = []
+    var cabJSON: JSON = []
     
     var mapId:IntegerLiteralType = 0
     
@@ -23,7 +24,17 @@ class MyDrawingView: UIView {
     func reloadData(){
         if myViewDelegate != nil {
             mapJSON = myViewDelegate!.JsonMap()
-            print(mapJSON["areas"][mapId]["map"]["vertices"][0]["name"].string)
+            
+        }
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            self.setNeedsDisplay()
+        }
+    }
+    
+    func updateCab(){
+        if myViewDelegate != nil {
+            cabJSON = myViewDelegate!.JsonCab()
         }
         
         dispatch_async(dispatch_get_main_queue()) {
@@ -34,12 +45,12 @@ class MyDrawingView: UIView {
     
     override func drawRect(rect: CGRect) {
         // Drawing code
-        
+        /*
         let h = rect.height
         let w = rect.width
         let color:UIColor = UIColor.yellowColor()
-        var drect:CGRect
-        
+        */var drect:CGRect
+
         
         /*for street in mapJSON["areas"][0]["map"]["streets"] {
             
@@ -114,10 +125,55 @@ class MyDrawingView: UIView {
             s.drawInRect(drect, withAttributes: attributes as? [String : AnyObject])
             //Do something you want
             
-            print(key)
-            print(subJson)
+            
             
         }
+        
+        if(cabJSON != nil){
+            for (key,subJson):(String, JSON) in cabJSON["cab_infos"] {
+                print(subJson)
+                let test = subJson["location"]["area"].string == mapJSON["areas"][mapId]["name"].string
+                
+                let a1 = subJson["location"]["area"].string
+                let a2 = mapJSON["areas"][mapId]["name"].string
+                print("area check\(test), \(a1),\(a2)")
+                
+                if(subJson["location"]["area"].string == mapJSON["areas"][mapId]["name"].string){
+                    let x = CGFloat( subJson["location"]["coord"]["x"].float!)*bounds.width
+                    let y = CGFloat( subJson["location"]["coord"]["y"].float!)*bounds.height
+                    
+                    
+                    let fieldFont = UIFont(name: "Helvetica Neue", size: 18)
+                    let fieldColor: UIColor = UIColor.darkGrayColor()
+                    let paraStyle = NSMutableParagraphStyle()
+                    let skew = 0.1
+                    paraStyle.alignment = NSTextAlignment.Center
+                    
+                    
+                    
+                    let attributes: NSDictionary = [
+                        NSForegroundColorAttributeName: fieldColor,
+                        NSParagraphStyleAttributeName: paraStyle,
+                        NSObliquenessAttributeName: skew,
+                        NSFontAttributeName: fieldFont!
+                    ]
+                    
+                    drect = CGRectMake(x-10, y-10, 20, 20)
+                    
+                    
+                    let tmp: NSNumber = subJson["id_cab"].number!
+                    let s: NSString = tmp.stringValue
+                    let path = UIBezierPath(ovalInRect: drect)
+                    UIColor.lightGrayColor().setFill()
+                    path.fill()
+                    s.drawInRect(drect, withAttributes: attributes as? [String : AnyObject])
+                    
+                    
+                }
+            }
+
+        }
+        
         
         
         
