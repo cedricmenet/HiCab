@@ -30,6 +30,7 @@ class ViewController: UIViewController, MyViewDelegate{
     var myJson : JSON = []
     var myCab : JSON = []
     var channel:String = ""
+    var ws:WebSocket?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,13 +99,129 @@ class ViewController: UIViewController, MyViewDelegate{
     }
     
     func handleTap(gestureRecognizer: UIGestureRecognizer) {
+        print("You tapped at \(gestureRecognizer.locationInView(self.myDrawingView))")
+        
+        var mPoint:CGPoint =  gestureRecognizer.locationInView(self.myDrawingView)
+        
+        mPoint.x /= self.myDrawingView.bounds.width
+        mPoint.y /= self.myDrawingView.bounds.height
+        
+        print("click : x\(mPoint.x), y \(mPoint.y) ")
+        
+        //best candidate on json
+        
+        var nearestStreet :JSON = []
+        var bestDist:CGFloat = 1000000
+        var bestD:CGPoint = CGPoint()
+        
+        for (key,subJson):(String, JSON) in self.myJson["areas"][self.myDrawingView.mapId]["map"]["streets"] {
+            
+            
+            var va = getVertexByName(subJson["path"][0].string!, vertices: self.myJson["areas"][self.myDrawingView.mapId]["map"]["vertices"])
+            var vb = getVertexByName(subJson["path"][1].string!, vertices: self.myJson["areas"][self.myDrawingView.mapId]["map"]["vertices"])
+            
+            
+            var a = CGPoint(
+                x:CGFloat( va["x"].float!),
+                y:CGFloat( va["y"].float!))
+            
+            var b = CGPoint(
+                x:CGFloat( vb["x"].float!),
+                y:CGFloat( vb["y"].float!))
+            
+            //on remet dans le bon ordre
+            if(a.x > b.x){
+                var ptmp = a
+                a = b
+                b = ptmp
+            }
+            
+            var dist:CGFloat = 100000
+            var c = mPoint
+            var d : CGPoint = CGPoint()
+            
+            
+            if(a.x == b.x){
+                dist = abs ( a.x - c.x)
+                d.x = a.x
+                d.y = c.y
+                
+            }
+            else if(a.y == b.y){
+                dist = abs ( a.y -  c.y)
+                d.x = c.x
+                d.y = a.y
+                print("test")
+            }
+            else{
+                
+                
+                
+                
+                
+                var v0 = (b.x-a.x)*(c.y-a.y)*(b.y-a.y)
+                var v1 = c.x*pow(b.x-a.x,2)+a.x*pow(b.y-a.y,2)
+                var v2 = (pow(b.x-a.x,2)+pow(b.y-a.y,2))
+                
+                d.x = (v0 + v1) / v2
+                d.y = (b.y-a.y)/(b.x-a.x)*(d.x-a.x)+a.y
+                
+                 dist = sqrt(pow(c.x-d.x,2)+pow(c.y-d.y,2))
+            }
+            
+            
+            
+            
+            
+            print("dist \(dist) d.x\(d.x), d.y \(d.y) ")
+            
+            if((d.x >= a.x && d.x <= b.x) || (d.x <= a.x && d.x >= b.x) ) && ((d.y >= a.y && d.y <= b.y) || (d.y <= a.y && d.y >= b.y))
+            {
+                    // on a le point D valide
+                    // on cherche la distance entre D et C
+                
+                
+                    
+                    if(bestDist > dist){
+                        
+                        bestD = d
+                        nearestStreet = subJson
+                        bestDist = dist
+                    }
+                
+                
+            }
+            
+        }
+        
+        // a ce stade on a la meilleure Street
+        
+        print("bestD.x\(bestD.x), bestD.y \(bestD.y) ")
+        print("nearestStreet\(nearestStreet)")
+
+        
+        
+        let blop:String = "{\"location\": {\"backward\": false,\"name\": \"am\",\"weight\": 1.0,\"area\": \"Quartier Sud\",\"loc_type\": \"street\",\"path\": [\"a\",\"m\"],\"oneway\": true,\"progression\": 1,\"coord\": {\"y\": 1,\"x\": 0}}}"
         
         
         
         
-        let alertController = UIAlertController(title: nil, message: "You tapped at \(gestureRecognizer.locationInView(self.myDrawingView))", preferredStyle: .Alert)
+        
+        
+        self.ws!.send(blop)
+        
+        
+        
+        
+        //let ,,valid = NSJSONSerialization.isValidJ,,SONObject(jsonObject) // true
+        
+        
+        
+        //self.ws!.send(msg)
+        
+        /*let alertController = UIAlertController(title: nil, message: "You tapped at \(gestureRecognizer.locationInView(self.myDrawingView))", preferredStyle: .Alert)
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: { _ in }))
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.presentViewController(alertController, animated: true, completion: nil)*/
     }
     
     
@@ -150,24 +267,24 @@ class ViewController: UIViewController, MyViewDelegate{
                     
                     
                     var messageNum = 0
-                    let ws = WebSocket("ws://192.168.1.1/\(self.channel)")
+                    self.ws = WebSocket("ws://192.168.1.1/\(self.channel)")
                     let send : ()->() = {
                         let msg = "\(++messageNum): \(NSDate().description)"
                         print("send: \(msg)")
-                        ws.send(msg)
+                        self.ws!.send(msg)
                     }
-                    ws.event.open = {
+                    self.ws!.event.open = {
                         print("opened")
                         //send()
                     }
-                    ws.event.close = { code, reason, clean in
+                    self.ws!.event.close = { code, reason, clean in
                         print("close , \(code), \(reason)")
                         //self.myDrawingView.reloadData()
                     }
-                    ws.event.error = { error in
+                    self.ws!.event.error = { error in
                         print("error \(error)")
                     }
-                    ws.event.message = { message in
+                    self.ws!.event.message = { message in
                         if let text = message as? String {
                             //print("recv: \(text)")
                             
@@ -194,11 +311,16 @@ class ViewController: UIViewController, MyViewDelegate{
     }
     
     
+    func getVertexByName(name:String,vertices:JSON) ->JSON
+    {
+        for (key,subJson):(String, JSON) in vertices{
+            if(subJson["name"].string == name){
+                return subJson
+            }
+        }
+        return nil
+    }
     
-    
-
-    
-
 
 }
 
