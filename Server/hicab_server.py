@@ -36,7 +36,7 @@ sockets = Sockets(app)
 
 def cabs_move_thread():
 	while True:
-		time.sleep(1)
+		time.sleep(0.05)
 		cab_lock.acquire()
 		for cab in cabs:
 			if cab.is_busy:

@@ -40,9 +40,9 @@ class Cab(object):
 	# Avance le taxi en suivant le path, et s'arrête si il arrive au client
 	def move_forward(self):
 		if self.is_busy:
-			self.odometer += 1
+			self.odometer += 0.5
 			traffic_jam = self.position["weight"]
-			progress = 0.05 / traffic_jam
+			progress = 0.01 / traffic_jam
 			total_progress = self.position["progression"] + progress
 			is_arrived = False
 			# Gestion de l'arrêt au client
@@ -127,7 +127,7 @@ class CabMonitoring(Thread):
 			self.cab_lock.release()
 			self.request_lock.release()
 			# Temporisation 
-			time.sleep(0.05)
+			time.sleep(0.10)
 	
 	# Arrêt du thread de monitoring
 	def stop_monitoring(self):
