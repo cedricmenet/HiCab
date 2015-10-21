@@ -18,13 +18,13 @@ class Cab(object):
 
 	# Permet d'accepter ou refuser une requête
 	def handle_request(self,requests_queue, accepted):
-		if not is_busy:
+		if not self.is_busy:
 			if accepted:
 				# Accepte la première requête de la file
 				self.current_request = requests_queue[0]
 				self.is_busy = True
 				self.odometer = 0
-				self.path = get_path(self.json_map, self.position, self.CabRequest.location)
+				self.path = get_path(self.json_map, self.position, self.current_request.location)
 				print('[.. CabDevice#'+ str(self.id_cab) +']: Accept a cab request')
 			else:
 				print('[.. CabDevice#'+ str(self.id_cab) +']: Refuse a cab request')
@@ -39,33 +39,36 @@ class Cab(object):
 
 	# Avance le taxi en suivant le path, et s'arrête si il arrive au client
 	def move_forward(self):
-		traffic_jam = self.position["weight"]
-		progress = (0.2 / traffic_jam)
-		total_progress = self.position["progression"] + progress
-		# Gestion de l'arrêt au client
-		if is_busy:
+		if self.is_busy:
 			self.odometer += 1
+			traffic_jam = self.position["weight"]
+			progress = 0.2 / (traffic_jam + 0.1)
+			total_progress = self.position["progression"] + progress
+			arrived = False
+			# Gestion de l'arrêt au client
 			if self.position["name"] == self.current_request.location["name"]:
 				destination = self.current_request.location
 				if "progression" in destination and total_progress >= destination["progression"]:
 					self.is_busy = False
 					self.position["progression"] = destination["progression"]
 					self.current_request = None
+					is_arrived = True
 					print('[.. CabDevice#'+ str(self.id_cab) +']: $$ Mission complete $$')
-		# Gestion du suivi de chemin
-		if total_progress < 1:
-			self.position["progression"] += progress
-		else:
-			# Changement de location
-			if len(self.path) > 0:
-				self.path = self.path[1:]
-				self.position = self.path[0]
-				self.position["progression"] = 1 - total_progress
-			else:
-				# Pas de chemin à suivre 
-				self.position["progression"] = 1
-				self.is_busy = False
-				print('[.. CabDevice#'+ str(self.id_cab) +']: Where should i go ?')
+			if not is_arrived:
+				# Gestion du suivi de chemin
+				if total_progress < 1:
+					self.position["progression"] += progress
+				else:
+					# Changement de location
+					if len(self.path) > 0:
+						self.path = self.path[1:]
+						self.position = self.path[0]
+						self.position["progression"] = total_progress - 1
+					else:
+						# Pas de chemin à suivre 
+						self.position["progression"] = 1
+						self.is_busy = False
+						print('[.. CabDevice#'+ str(self.id_cab) +']: Where should i go ?')
 
 # Représente une demande de taxi
 class CabRequest(object):
@@ -198,11 +201,12 @@ class ChannelCab:
 
 # Channel de communication avec les display_device
 class ChannelDisplay:
-	def __init__(self, requests_queue, ws, request_lock):
+	def __init__(self, json_map, requests_queue, ws, request_lock):
 		self.requests_queue = requests_queue
 		self.websocket = ws
 		self.on_air = True
 		self.request_lock = request_lock
+		self.json_map = json_map
 		
 	# Ecoute des messages du display_device
 	def listen(self):
@@ -216,6 +220,9 @@ class ChannelDisplay:
 			self.request_lock.acquire()
 			try:
 				new_req = CabRequest(len(self.requests_queue), json.loads(message)['location'])
+				if not "name" in new_req.location:
+					new_req.location = get_random_street(self.json_map)
+					print('[.. DisplayDevice]: Random request generated : ' + str(new_req.location))
 				self.requests_queue.append(new_req)
 				print('[.. DisplayDevice]: New request registered')
 			except:

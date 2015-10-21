@@ -4,8 +4,8 @@ import json
 from threading import Thread, Lock
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
-from cab_manager import load_map
-from map_manager import *
+from cab_manager import *
+from map_manager import load_map
 
 ######## THREAD LOCKS #######
 cab_lock = Lock()
@@ -34,18 +34,20 @@ app.debug = True
 app.config['SECRET_KEY'] = 'secret!'
 sockets = Sockets(app)
 
-# Thread de déplacement
-thread_move = None
-
-# Thread de déplacement des cabs
 def cabs_move_thread():
 	while True:
-		time.sleep(5)
+		time.sleep(1)
 		cab_lock.acquire()
 		for cab in cabs:
-			#if cab.is_busy:
-			cab.odometer += 1
+			if cab.is_busy:
+				cab.move_forward()
 		cab_lock.release()
+		
+# Thread de déplacement
+thread_move = None
+thread_move = Thread(target=cabs_move_thread)
+thread_move.start()
+
 
 ####### WEBSERVER #######
 # Page de test des WebSockets
@@ -97,16 +99,6 @@ def subscribe_display():
 	response = {'channel': u'display_device'}
 	print ('[<= Subscribe] New display registered')
 	return jsonify(response)
-	
-# Demarrage de la simulation des taxis
-@app.route('/simulation/start_move')
-def move_cabs():
-	global thread_move
-	if thread_move is None:
-		thread_move = Thread(target=cabs_move_thread)
-		thread_move.start()
-		print('[.. Simulation] Start move')
-	return ''
 
 ####### WEBSOCKET #######
 # Gestion des channels cab_device
@@ -140,7 +132,7 @@ def channel_cab_device(ws):
 def channel_display_device(ws):
 	print("[<= DisplayDevice]: New display connected")
 	# Création du channel
-	channel = ChannelDisplay(requests, ws, request_lock)
+	channel = ChannelDisplay(json_map, requests, ws, request_lock)
 	display_channels.append(channel)
 	# On marque les cabs "changed" pour forcer un premier envoi par le monitor
 	cab_lock.acquire()
