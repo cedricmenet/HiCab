@@ -113,6 +113,8 @@ class ViewController: UIViewController, MyViewDelegate{
         var nearestStreet :JSON = []
         var bestDist:CGFloat = 1000000
         var bestD:CGPoint = CGPoint()
+        var progression :CGFloat = 1
+        var shouldreverse  : CGFloat = 1
         
         for (key,subJson):(String, JSON) in self.myJson["areas"][self.myDrawingView.mapId]["map"]["streets"] {
             
@@ -130,10 +132,12 @@ class ViewController: UIViewController, MyViewDelegate{
                 y:CGFloat( vb["y"].float!))
             
             //on remet dans le bon ordre
+            shouldreverse = 1
             if(a.x > b.x){
                 var ptmp = a
                 a = b
                 b = ptmp
+                shouldreverse = -1
             }
             
             var dist:CGFloat = 100000
@@ -184,6 +188,11 @@ class ViewController: UIViewController, MyViewDelegate{
                     
                     if(bestDist > dist){
                         
+                        progression =  sqrt(pow(a.x-d.x,2)+pow(a.y-d.y,2)) / sqrt(pow(a.x-b.x,2)+pow(a.y-b.y,2))
+                        if(shouldreverse == 1){
+                            progression = 1 - progression
+                        }
+                        
                         bestD = d
                         nearestStreet = subJson
                         bestDist = dist
@@ -199,12 +208,16 @@ class ViewController: UIViewController, MyViewDelegate{
         print("bestD.x\(bestD.x), bestD.y \(bestD.y) ")
         print("nearestStreet\(nearestStreet)")
 
+        var jname = nearestStreet["name"].string
+        var jarea = nearestStreet["area"].string
+        var jpath1 = nearestStreet["path"][0].string
+        var jpath0 = nearestStreet["path"][1].string
+        var joneway = nearestStreet["oneway"].bool
+        
+        let blop:String = "{\"location\": {\"backward\": false,\"name\": \"\(jname!)\",\"weight\": 1.0,\"area\": \"\(jarea!)\",\"loc_type\": \"street\",\"path\": [\"\(jpath0!)\",\"\(jpath1!)\"],\"oneway\": \(joneway!),\"progression\": \(progression),\"coord\": {\"y\": 1,\"x\": 0}}}"
         
         
-        let blop:String = "{\"location\": {\"backward\": false,\"name\": \"am\",\"weight\": 1.0,\"area\": \"Quartier Sud\",\"loc_type\": \"street\",\"path\": [\"a\",\"m\"],\"oneway\": true,\"progression\": 1,\"coord\": {\"y\": 1,\"x\": 0}}}"
-        
-        
-        
+        print(blop)
         
         
         
