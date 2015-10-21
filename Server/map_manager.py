@@ -165,6 +165,7 @@ def get_random_street(json_map):
     streets = areas[random.randrange(len(areas))]['map']['streets']
     street = copy.copy(streets[random.randrange(len(streets))])
     street['progression'] = random.random()
+    street['backward'] = False
     return street
 
 
