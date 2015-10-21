@@ -37,6 +37,11 @@
                 socket.onmessage = function(evt){
                     $('#log').append(evt.data + '<br/>');
                     cabs = eval("(" + evt.data.replace(/False/g,"false").replace(/True/g, "true").replace(/None/g, "null") + ')')
+                    $('#cabs').text("");
+                    cabs['cab_infos'].forEach(function(data) {
+                        $('#cabs').append("<li>Cab#" + data["id_cab"] + "<br/></li>");
+                    });
+                    
                 }
                 return false;
             });
@@ -64,7 +69,8 @@
     <h1>HiCab display_device simulation</h1>
     <h2>Infos:</h2>
     Channel:<label id='lbl_channel'>?</label><br/><br/>
- 
+    <ul id='cabs'>
+    </ul>
     <h2>Commands: </h2>
     <form id="getmap" method="POST" action="">
         <input type="submit" value="Get Map">
