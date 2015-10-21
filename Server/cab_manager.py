@@ -157,7 +157,7 @@ class CabMonitoring(Thread):
 			message['cab_infos'].append(new_info)
 		# Envoi sur les display_channels associés
 		for channel in self.display_channels:
-			channel.send(message)
+			channel.send(json.dumps(message))
 
 # Channel de communication avec les cab_device
 class ChannelCab:
