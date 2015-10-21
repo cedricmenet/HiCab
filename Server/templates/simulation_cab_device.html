@@ -16,15 +16,6 @@
                 })
                 return false;
             });
-            $('form#simulation').submit(function(event) {
-                $.ajax( {
-                    type:'Get',
-                    url:'http://' + location.host + '/simulation/start_move',
-                    success:function(data) {
-                    }
-                })
-                return false;
-            });
             var socket;
             $('form#connect').submit(function(event) {
             // Connection
@@ -80,9 +71,6 @@
     </form>
     <form id="connect" method="POST" action="">
         <input type="submit" value="Connect">
-    </form>
-    <form id="simulation" method="POST" action="">
-        <input type="submit" value="Start Move">
     </form>
     <form id="request_accept" method="POST" action="">
         <input type="submit" value="Accept request">
