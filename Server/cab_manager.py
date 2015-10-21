@@ -44,7 +44,7 @@ class Cab(object):
 			traffic_jam = self.position["weight"]
 			progress = 0.2 / (traffic_jam + 0.1)
 			total_progress = self.position["progression"] + progress
-			arrived = False
+			is_arrived = False
 			# Gestion de l'arrêt au client
 			if self.position["name"] == self.current_request.location["name"]:
 				destination = self.current_request.location
