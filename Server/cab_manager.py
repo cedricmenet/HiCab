@@ -41,11 +41,11 @@ class Cab(object):
 	# Avance le taxi en suivant le path, et s'arrête si il arrive au client
 	def move_forward(self):
 		if self.is_busy:
-			self.odometer += 1
+			self.odometer += 0.1
 			traffic_jam = self.position["weight"]
-			progress = 0.2 / (traffic_jam + 0.1)
+			progress = 0.01 / traffic_jam
 			total_progress = self.position["progression"] + progress
-			arrived = False
+			is_arrived = False
 			# Gestion de l'arrêt au client
 			if self.position["name"] == self.current_request.location["name"]:
 				destination = self.current_request.location
@@ -128,7 +128,7 @@ class CabMonitoring(Thread):
 			self.cab_lock.release()
 			self.request_lock.release()
 			# Temporisation 
-			time.sleep(0.2)
+			time.sleep(0.15)
 	
 	# Arrêt du thread de monitoring
 	def stop_monitoring(self):
@@ -150,16 +150,16 @@ class CabMonitoring(Thread):
 	# Envoi des infos vers les display_device inscrits
 	def send_to_displays(self):
 		# Construction du message
-		message = "{'cab_infos':["
+		message = {}
+		message['cab_infos'] = []
 		for cab in self.cabs:
-			message += str({"id_cab":cab.id_cab,
-						   "location":cab.position}) + ","
-		if message[len(message) - 1] == ",":
-			message = message[0:-1]
-		message += "]}"
+			cab.position["coord"] = get_coord(cab.position, cab.json_map)
+			new_info = {"id_cab":cab.id_cab,
+						"location":cab.position}
+			message['cab_infos'].append(new_info)
 		# Envoi sur les display_channels associés
 		for channel in self.display_channels:
-			channel.send(message)
+			channel.send(json.dumps(message))
 
 # Channel de communication avec les cab_device
 class ChannelCab:
