@@ -70,7 +70,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Projet MEnet/ViewController.swift"
@@ -83,14 +83,14 @@
             landmarkType = "3">
             <Locations>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "Projet_MEnet.ViewController.init (Projet_MEnet.ViewController.Type)(nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;ObjectiveC.NSBundle&gt;) -&gt; Projet_MEnet.ViewController"
                   moduleName = "Projet MEnet"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/gperes/HiCab/Display/Projet%20MEnet/Projet%20MEnet/ViewController.swift"
-                  timestampString = "467043251.864604"
+                  timestampString = "467046154.733532"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
@@ -98,14 +98,14 @@
                   offsetFromSymbolStart = "55">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "Projet_MEnet.ViewController.init (Projet_MEnet.ViewController.Type)(coder : ObjectiveC.NSCoder) -&gt; Swift.Optional&lt;Projet_MEnet.ViewController&gt;"
                   moduleName = "Projet MEnet"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/gperes/HiCab/Display/Projet%20MEnet/Projet%20MEnet/ViewController.swift"
-                  timestampString = "467043251.864848"
+                  timestampString = "467046154.733771"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
@@ -128,6 +128,70 @@
             startingLineNumber = "57"
             endingLineNumber = "57"
             landmarkName = "viewDidLoad()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Projet MEnet/MyDrawingView.swift"
+            timestampString = "467045854.039232"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "MyDrawingView"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Projet_MEnet.MyDrawingView.init (Projet_MEnet.MyDrawingView.Type)(frame : C.CGRect) -&gt; Projet_MEnet.MyDrawingView"
+                  moduleName = "Projet MEnet"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/gperes/HiCab/Display/Projet%20MEnet/Projet%20MEnet/MyDrawingView.swift"
+                  timestampString = "467103440.562355"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "63">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Projet_MEnet.MyDrawingView.init (Projet_MEnet.MyDrawingView.Type)(coder : ObjectiveC.NSCoder) -&gt; Swift.Optional&lt;Projet_MEnet.MyDrawingView&gt;"
+                  moduleName = "Projet MEnet"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/gperes/HiCab/Display/Projet%20MEnet/Projet%20MEnet/MyDrawingView.swift"
+                  timestampString = "467103440.56289"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Projet MEnet/MyDrawingView.swift"
+            timestampString = "467108971.5445"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
+            landmarkName = "drawRect(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
