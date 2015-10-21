@@ -49,6 +49,18 @@ class ViewController: UIViewController, MyViewDelegate{
                 self.view.addSubview(myDrawingView)
         
         
+        //tap gesture recogniser
+        
+        
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
+        self.myDrawingView.addGestureRecognizer(gestureRecognizer)
+        
+        
+        
+        
+        
+        
+        
         let url : NSURL? = NSURL(string: "http://192.168.1.1/getmap")
         let session = NSURLSession.sharedSession()
         let dataTask = session.dataTaskWithURL((url)!, completionHandler: { (data: NSData?, response:NSURLResponse?,
@@ -84,6 +96,18 @@ class ViewController: UIViewController, MyViewDelegate{
         
         
     }
+    
+    func handleTap(gestureRecognizer: UIGestureRecognizer) {
+        
+        
+        
+        
+        let alertController = UIAlertController(title: nil, message: "You tapped at \(gestureRecognizer.locationInView(self.myDrawingView))", preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: { _ in }))
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    
     
     override func viewWillAppear(animated: Bool) {
         myDrawingView.reloadData()
@@ -153,7 +177,7 @@ class ViewController: UIViewController, MyViewDelegate{
                             self.myDrawingView.updateCab()
                             
                             if messageNum == 10 {
-                                ws.close()
+                                //ws.close()
                             } else {
                                 //send()
                             }
