@@ -5,6 +5,7 @@ from threading import Thread, Lock
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_sockets import Sockets
 from cab_manager import *
+from map_manager import load_map
 
 ######## THREAD LOCKS #######
 cab_lock = Lock()
@@ -12,7 +13,7 @@ request_lock = Lock()
 
 ######## VARIABLES #######
 # Map
-areas = [{'name': u'Quartier Nord','map': {'weight': {'w': 1,'h': 1},'vertices': [{'name': u'm','x': 0.5,'y': 0.5},{'name': u'b','x': 0.5,'y': 1}],'streets': [{'name': u'mb','path': [u'm',u'b'],'oneway': False}],'bridges': [{'from': u'b','to': {'area': u'Quartier Sud','vertex': u'h'},'weight': 2}]}},{'name': u'Quartier Sud','map': {'weight': {'w': 1,'h': 1},'vertices': [{'name': u'a','x': 1,'y': 1},{'name': u'm','x': 0,'y': 1},{'name': u'h','x': 0.5,'y': 0}],'streets': [{'name': u'ah','path': [u'a',u'h'],'oneway': False},{'name': u'mh','path': [u'm',u'h'],'oneway': False}],'bridges': [{'from': u'h','to': {'area': u'Quartier Nord','vertex': u'b'},'weight': 2}]}}]
+json_map = load_map('map.json')
 
 # Liste de Cab
 cabs = []
@@ -33,18 +34,20 @@ app.debug = True
 app.config['SECRET_KEY'] = 'secret!'
 sockets = Sockets(app)
 
-# Thread de déplacement
-thread_move = None
-
-# Thread de déplacement des cabs
 def cabs_move_thread():
 	while True:
-		time.sleep(5)
+		time.sleep(1)
 		cab_lock.acquire()
 		for cab in cabs:
-			#if cab.is_busy:
-			cab.odometer += 1
+			if cab.is_busy:
+				cab.move_forward()
 		cab_lock.release()
+		
+# Thread de déplacement
+thread_move = None
+thread_move = Thread(target=cabs_move_thread)
+thread_move.start()
+
 
 ####### WEBSERVER #######
 # Page de test des WebSockets
@@ -76,13 +79,13 @@ def send_index():
 # Renvoi la map
 @app.route('/getmap')
 def get_map():
-	return jsonify({'areas':areas})
+	return jsonify(json_map)
 	
 # Inscription d'un taxis
 @app.route('/subscribe/cab')
 def subscribe_cab():
 	cab_lock.acquire()
-	new_cab = Cab(len(cabs), None)
+	new_cab = Cab(len(cabs), json_map)
 	cabs.append(new_cab)
 	response = {'id_cab': new_cab.id_cab,
 				'channel': u'cab_device' }
@@ -96,16 +99,6 @@ def subscribe_display():
 	response = {'channel': u'display_device'}
 	print ('[<= Subscribe] New display registered')
 	return jsonify(response)
-	
-# Demarrage de la simulation des taxis
-@app.route('/simulation/start_move')
-def move_cabs():
-	global thread_move
-	if thread_move is None:
-		thread_move = Thread(target=cabs_move_thread)
-		thread_move.start()
-		print('[.. Simulation] Start move')
-	return ''
 
 ####### WEBSOCKET #######
 # Gestion des channels cab_device
@@ -139,7 +132,7 @@ def channel_cab_device(ws):
 def channel_display_device(ws):
 	print("[<= DisplayDevice]: New display connected")
 	# Création du channel
-	channel = ChannelDisplay(requests, ws, request_lock)
+	channel = ChannelDisplay(json_map, requests, ws, request_lock)
 	display_channels.append(channel)
 	# On marque les cabs "changed" pour forcer un premier envoi par le monitor
 	cab_lock.acquire()
