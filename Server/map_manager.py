@@ -17,17 +17,20 @@ def save_file(filename, data):
 # Charge la map dans map.json
 def load_map(filename):
     json_map = get_data_from_file(filename)
-    json_map = add_infos_streets(json_map)
+    json_map = add_infos_on_map(json_map)
     return json_map
 
-# Ajout de la pondération et le nom des area sur les rues
-def add_infos_streets(json_map):
+# Ajout de la pondération et le nom des area sur les rues et les bridges
+def add_infos_on_map(json_map):
     for area in json_map['areas']:
         for street in area['map']['streets']:
             vertex_a = get_vertex(street['path'][0], area['map'])
             vertex_b = get_vertex(street['path'][1], area['map'])
             street['weight'] =  get_weight(vertex_a, vertex_b)
             street['area'] = area['name']
+        for bridge in area['map']['bridges']:
+            bridge['area'] = area['name']
+            bridge['name'] = "from:" + bridge['from'] + "_to:" + bridge['to']['vertex'] + "@" + bridge['to']['area']
     return json_map
  
 # Construction d'un graph pondéré
@@ -89,7 +92,7 @@ def get_bridge(vertex_name_a, vertex_name_b, area_name_a, area_name_b, areas):
         
 # Calcul le poid entre deux vertices
 def get_weight(vertex_a, vertex_b):
-    return sqrt(vertex_a['x']**2 + vertex_a['x']**2)
+    return sqrt((vertex_a['x']*1.0)**2 + (vertex_a['x']*1.0)**2)
     
 # Renvoi le chemin réel entre 2 vertex "encodé"
 def convert_to_loc(areas, start_encode, stop_encode):
