@@ -42,7 +42,7 @@ class Cab(object):
 		if self.is_busy:
 			self.odometer += 1
 			traffic_jam = self.position["weight"]
-			progress = 0.2 / (traffic_jam + 0.1)
+			progress = 0.05 / traffic_jam
 			total_progress = self.position["progression"] + progress
 			is_arrived = False
 			# Gestion de l'arrêt au client
@@ -127,7 +127,7 @@ class CabMonitoring(Thread):
 			self.cab_lock.release()
 			self.request_lock.release()
 			# Temporisation 
-			time.sleep(0.2)
+			time.sleep(0.05)
 	
 	# Arrêt du thread de monitoring
 	def stop_monitoring(self):
@@ -152,6 +152,7 @@ class CabMonitoring(Thread):
 		message = {}
 		message['cab_infos'] = []
 		for cab in self.cabs:
+			cab.position["coord"] = get_coord(cab.position, cab.json_map)
 			new_info = {"id_cab":cab.id_cab,
 						"location":cab.position}
 			message['cab_infos'].append(new_info)
