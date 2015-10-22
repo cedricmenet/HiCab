@@ -7,9 +7,15 @@ var ctxHeight;
 var txt_height;
 
 var JsonMapParsed;
-var JSONCab
+var JSONCab;
 
-var id =1// id de la map
+//var id =1;// id de la map
+
+var id = window.location.href.charAt(window.location.href.length-1)
+var requestx;
+var requesty;
+var displayRequest = false;
+
 
 
 $( document ).ready( function (e) {
@@ -28,8 +34,6 @@ $( document ).ready( function (e) {
 	ctx.textAlign = 'center';
 
 
-
-
 	$(window).resize(onResizeCanvas);
 
 	console.log("hoy");
@@ -42,18 +46,22 @@ $( document ).ready( function (e) {
 
 function cabRequest(event){
 	console.log("click " + event.clientX + " " + event.clientY )
+	
+	setTimeout(displayoff, 5000);
+	
+	
 	var tmp = JsonMapParsed["areas"][id]["map"]["streets"]
 	
 	
-	var shouldreverse = 1
-	var nearestStreet
-	var bestDist = 100000
-	var bestdx
-	var bestdy
-	var progression = 1
+	var shouldreverse = 1;
+	var nearestStreet;
+	var bestDist = 100000;
+	var bestdx;
+	var bestdy;
+	var progression = 1;
 	
 	for(var i = 0 ; i < tmp.length; i++){
-		
+		shouldreverse = 0 
 		//get vertex of street
 		var va = getVerticeByName(JsonMapParsed["areas"][id]["map"]["vertices"], tmp[i]["path"][0]);
 		var vb = getVerticeByName(JsonMapParsed["areas"][id]["map"]["vertices"], tmp[i]["path"][1]);
@@ -70,6 +78,7 @@ function cabRequest(event){
 			ay = by;
 			bx = tmpAx;
 			by = tmpAy;
+			shouldreverse = 1;
 			
 		}
 		
@@ -86,11 +95,13 @@ function cabRequest(event){
 			dist = Math.abs(ax - cx);
 			dx = ax;
 			dy = cy;
+			
 		}
 		else if ( ay == by){
 			dist = Math.abs(ay - cy);
 			dx = cx;
 			dy = ay;
+			shouldreverse = 1;
 		}
 		else{
 			var v0 = (bx-ax)*(cy-ay)*(by-ay);
@@ -105,6 +116,15 @@ function cabRequest(event){
 			
 			
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		if((( dx >= ax && dx <=bx) || (dx <= ax && dx >=bx)) && (( dx >= ay && dy <=by) || (dy <= ay && dy >=by)))
 		{
@@ -124,6 +144,12 @@ function cabRequest(event){
 		
 	
 	}
+	
+	requestx = bestdx * ctxWidth
+	requesty = bestdy * ctxHeight
+	displayRequest = true;
+	
+	console.log("req"+ requestx+"  "+requesty)
 	
 	var JSONrequest =
 	{
@@ -145,7 +171,7 @@ function cabRequest(event){
 	console.log(JSON.stringify(JSONrequest))
 	socket.send(JSON.stringify(JSONrequest))
 	
-	
+	DrawMap()
 }
 
 
@@ -168,6 +194,21 @@ function DrawMap(JMap){
 	var centerX = canvas.width / 2;
 	var centerY = canvas.height / 2;
 	var radius = 70;
+	
+	
+	
+	if(displayRequest){
+		ctx.beginPath();
+		ctx.arc(requestx, requesty, 10, 0, 2 * Math.PI, false);
+		ctx.fillStyle = 'grey';
+		ctx.fill();
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = 'grey';
+		ctx.stroke();
+	}
+	
+	
+	
 
 	/*ctx.beginPath();
 	ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
@@ -202,6 +243,7 @@ function DrawMap(JMap){
 				//drawing line between 2 vertices
 				
 				ctx.lineWidth = 5;
+				ctx.strokeStyle = 'black';
 				ctx.beginPath();
 				ctx.moveTo(verticeA["x"]*ctxWidth,verticeA["y"]*ctxHeight);
 				ctx.lineTo(verticeB["x"]*ctxWidth,verticeB["y"]*ctxHeight);
@@ -215,8 +257,12 @@ function DrawMap(JMap){
 				txt_height = 30;
 				var txt_width = ctx.measureText(txt).width;
 				
-				var center_txt_x = verticeA["x"] + Math.abs(verticeA["x"] - verticeB["x"])/2;
-				var center_txt_y = verticeA["y"] + Math.abs(verticeA["y"] - verticeB["y"])/2;
+			
+				
+				
+				
+				var center_txt_x =  Math.abs(verticeA["x"] + verticeB["x"])/2;
+				var center_txt_y =  Math.abs(verticeA["y"] + verticeB["y"])/2;
 				
 				// normalise to canavas
 				center_txt_x *= ctxWidth; 
@@ -254,7 +300,7 @@ function DrawMap(JMap){
 			var txt = vertices[i]["name"]
 			ctx.font="30px Verdana";
 			var txt_width = ctx.measureText(txt).width;
-			console.log(ctx.measureText(txt));
+			//console.log(ctx.measureText(txt));
 			
 			var centerX = vertices[i]["x"]*ctxWidth;
 			var centerY = vertices[i]["y"]*ctxHeight;
@@ -273,11 +319,11 @@ function DrawMap(JMap){
 			ctx.fillText(txt,centerX,centerY);
 		}
 	}
-	console.log("cab")
+	//console.log("cab")
 	if(JSONCab != undefined && JSONCab["cab_infos"] != undefined)
-	{console.log("cab")
+	{//console.log("cab")
 		for(var i = 0;i<JSONCab["cab_infos"].length;i++){
-			console.log("cab")
+			//console.log("cab")
 			if(JSONCab["cab_infos"][i]["location"]["area"] == JsonMapParsed["areas"][id]["name"])
 			{
 				// on est sur la bonne map
@@ -322,6 +368,10 @@ function getVerticeByName(array, vertice_name){
 	return undefined;
 }
 
+function displayoff(){
+	displayRequest = false
+	DrawMap()
+}
 
 
 var JsonMap = "\
