@@ -110,12 +110,16 @@ class CabMonitoring(Thread):
 	def run(self):
 		print("[.. Monitoring] Start")
 		self.on_air = True
+		request_count = 0
 		while self.on_air:
 			# Verrouillage des lockers
 			self.cab_lock.acquire()
 			self.request_lock.acquire()
 			# Vérification des changements dans la requests_queue
 			queue_changed = False
+			if len(self.requests_queue) != request_count:
+				queue_changed = True
+				request_count = len(self.requests_queue)
 			for request in self.requests_queue:
 				if request.is_new:
 					queue_changed = True
