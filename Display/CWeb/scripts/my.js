@@ -69,7 +69,7 @@ function cabRequest(event){
 			ax = bx;
 			ay = by;
 			bx = tmpAx;
-			by = tmpBy;
+			by = tmpAy;
 			
 		}
 		
@@ -93,14 +93,15 @@ function cabRequest(event){
 			dy = ay;
 		}
 		else{
-			var v0 = (bx-ax)*(cy-ay*)*(by-ay);
+			var v0 = (bx-ax)*(cy-ay)*(by-ay);
 			var v1 = cx*Math.pow(bx-ax,2)+ax*Math.pow(by-ay,2);
-			var v2 = (Math.pow(bx-ax,2)+Math.pow(by-ay));
+			var v2 = (Math.pow(bx-ax,2)+Math.pow(by-ay,2));
 			
 			dx = (v0 + v1) / v2;
 			dy = (by-ay)/(bx-ax)*(dx-ax)+ay;
 			
 			dist= Math.sqrt(Math.pow(cx-dx,2)+Math.pow(cy-dy,2));
+			console.log(dist)
 			
 			
 		}
@@ -141,6 +142,9 @@ function cabRequest(event){
 			}
 		}
 	}
+	console.log(JSON.stringify(JSONrequest))
+	socket.send(JSON.stringify(JSONrequest))
+	
 	
 }
 
