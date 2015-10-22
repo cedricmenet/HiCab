@@ -56,8 +56,6 @@ class Cab(object):
 					progress_goal = 1 - destination["progression"]
 				else :
 					progress_goal = destination["progression"]
-				print("Total progress = " + str(total_progress))
-				print("Progress goal = " + str(progress_goal))
 				if total_progress >= progress_goal:
 					self.is_busy = False
 					self.current_request = None
