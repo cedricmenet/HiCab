@@ -243,7 +243,10 @@ function DrawMap(JMap){
 				//drawing line between 2 vertices
 				
 				ctx.lineWidth = 5;
-				ctx.strokeStyle = 'black';
+				if(streets[i]["oneway"])
+					ctx.strokeStyle = 'green';
+				else
+					ctx.strokeStyle = 'black';
 				ctx.beginPath();
 				ctx.moveTo(verticeA["x"]*ctxWidth,verticeA["y"]*ctxHeight);
 				ctx.lineTo(verticeB["x"]*ctxWidth,verticeB["y"]*ctxHeight);
