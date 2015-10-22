@@ -27,7 +27,7 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
         super.init()
         // Create the data model.
         //let dateFormatter = NSDateFormatter()
-        pageData = ["lol"]
+        pageData = ["--Label--"]
     }
 
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> DataViewController? {
