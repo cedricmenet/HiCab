@@ -1,2 +1,2 @@
 # HiCab
-Cab simulation for Arduino And Android device 
+Cab simulation for Arduino And IOS device 
