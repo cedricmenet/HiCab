@@ -1,0 +1,276 @@
+{
+  "areas": [
+    {
+      "name": "Quartier Nord",
+      "map": {
+        "weight": {
+          "w": 1,
+          "h": 1
+        },
+        "vertices": [
+          {
+            "name": "a",
+            "x": 0.2,
+            "y": 0.2
+          },
+          {
+            "name": "b",
+            "x": 0.8,
+            "y": 0.2
+          },
+          {
+            "name": "c",
+            "x": 0.5,
+            "y": 0.8
+          }
+        ],
+        "streets": [
+        {
+          "name": "ab",
+          "path": [
+            "a",
+            "b"
+          ],
+          "oneway": false
+        },
+        {
+          "name": "ac",
+          "path": [
+            "a",
+            "c"
+          ],
+          "oneway": false
+        },
+        {
+          "name": "cb",
+          "path": [
+            "c",
+            "b"
+          ],
+          "oneway": true         
+        }],
+        "bridges": [
+          {
+            "from": "c",
+            "to": {
+              "area": "Centre Ville",
+              "vertex": "d"
+            },
+            "weight": 0.3
+          },
+          {
+            "from": "b",
+            "to": {
+              "area": "Quartier Sud",
+              "vertex": "k"
+            },
+            "weight": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "Centre Ville",
+      "map": {
+        "weight": {
+          "w": 1,
+          "h": 1
+        },
+        "vertices": [
+          {
+            "name": "d",
+            "x": 0.5,
+            "y": 0.2
+          },
+          {
+            "name": "e",
+            "x": 0.2,
+            "y": 0.4
+          },
+          {
+            "name": "f",
+            "x": 0.3,
+            "y": 0.8
+          },
+          {
+            "name": "g",
+            "x": 0.7,
+            "y": 0.8
+          },
+          {
+            "name": "h",
+            "x": 0.8,
+            "y": 0.4
+          }
+        ],
+        "streets": [
+          {
+            "name": "de",
+            "path": [
+              "d",
+              "e"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "ef",
+            "path": [
+              "e",
+              "f"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "fg",
+            "path": [
+              "f",
+              "g"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "gh",
+            "path": [
+              "g",
+              "h"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "ge",
+            "path": [
+              "g",
+              "e"
+            ],
+            "oneway": true
+          },
+          {
+            "name": "df",
+            "path": [
+              "d",
+              "f"
+            ],
+            "oneway": true
+          },
+          {
+            "name": "dh",
+            "path": [
+              "d",
+              "h"
+            ],
+            "oneway": false
+          }
+        ],
+        "bridges": [
+          {
+            "from": "d",
+            "to": {
+              "area": "Quartier Nord",
+              "vertex": "c"
+            },
+            "weight": 0.3
+          },
+          {
+            "from": "f",
+            "to": {
+              "area": "Quartier Sud",
+              "vertex": "i"
+            },
+            "weight": 0.3
+          }
+        ]
+      }
+    },
+    {
+      "name": "Quartier Sud",
+      "map": {
+        "weight": {
+          "w": 1,
+          "h": 1
+        },
+        "vertices": [
+          {
+            "name": "i",
+            "x": 0.3,
+            "y": 0.2
+          },
+          {
+            "name": "j",
+            "x": 0.2,
+            "y": 0.6
+          },
+          {
+            "name": "k",
+            "x": 0.8,
+            "y": 0.8
+          },
+          {
+            "name": "l",
+            "x": 0.7,
+            "y": 0.4
+          }
+        ],
+        "streets": [
+          {
+            "name": "ij",
+            "path": [
+              "i",
+              "j"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "jk",
+            "path": [
+              "j",
+              "k"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "kl",
+            "path": [
+              "k",
+              "l"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "li",
+            "path": [
+              "l",
+              "i"
+            ],
+            "oneway": false
+          },
+          {
+            "name": "ik",
+            "path": [
+              "i",
+              "k"
+            ],
+            "oneway": true
+          }
+        ],
+        "bridges": [
+          {
+            "from": "i",
+            "to": {
+              "area": "Centre Ville",
+              "vertex": "f"
+            },
+            "weight": 0.3
+          },
+          {
+            "from": "k",
+            "to": {
+              "area": "Quartier Nord",
+              "vertex": "b"
+            },
+            "weight": 1
+          }
+        ]
+      }
+    }
+  ]
+}

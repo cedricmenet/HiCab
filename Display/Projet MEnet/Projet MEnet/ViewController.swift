@@ -179,7 +179,7 @@ class ViewController: UIViewController, MyViewDelegate{
             
             print("dist \(dist) d.x\(d.x), d.y \(d.y) ")
             
-            if((d.x >= a.x && d.x <= b.x) || (d.x <= a.x && d.x >= b.x) ) && ((d.y >= a.y && d.y <= b.y) || (d.y <= a.y && d.y >= b.y))
+            if(((d.x >= a.x && d.x <= b.x) || (d.x <= a.x && d.x >= b.x) ) && ((d.y >= a.y && d.y <= b.y) || (d.y <= a.y && d.y >= b.y)))
             {
                     // on a le point D valide
                     // on cherche la distance entre D et C
