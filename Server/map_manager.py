@@ -171,16 +171,29 @@ def get_random_street(json_map):
 
 # Obtient le chemin le plus court
 def get_path(json_map, street_start, street_end):
-    start_encode = street_start["path"][1] + "@" + street_start["area"]
+    is_backward = False
+    start_encode = None
+    if "backward" in street_start and street_start['backward']:
+        start_encode = street_start["path"][0] + "@" + street_start["area"]
+        is_backward = True
+    else:
+        start_encode = street_start["path"][1] + "@" + street_start["area"]
     end_encode = street_end["path"][0] + "@" + street_end["area"]
-    graph = get_graph(json_map)
-    path_encode = dij_rec(graph,start_encode,end_encode)['path']
+    disktra_need = False
+    path_encode = {}
     path = []
-    path.append(street_start)
-    for i in range(len(path_encode) - 1):
-        loc = convert_to_loc(json_map['areas'], path_encode[i], path_encode[i+1])
-        path.append(loc)
-    path.append(street_end)
+    path.append(copy.copy(street_start))
+    if not (street_start["name"] == street_end["name"] and not is_backward):
+        if not start_encode == end_encode:
+            disktra_need = True
+            graph = get_graph(json_map)
+            path_encode = dij_rec(graph,start_encode,end_encode)['path']
+            for i in range(len(path_encode) - 1):
+                loc = copy.copy(convert_to_loc(json_map['areas'], path_encode[i], path_encode[i+1]))
+                path.append(loc)
+            path.append(copy.copy(street_end))
+        elif street_start['name'] != street_end["name"] or is_backward :
+            path.append(copy.copy(street_end))
     return path
 
 ## MAIN TEST
