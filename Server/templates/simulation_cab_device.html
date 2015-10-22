@@ -32,6 +32,7 @@
                     cab = eval("(" + evt.data.replace("False","false").replace("True", "true") + ')')
                     $('#lbl_isbusy').text(cab['is_busy'].toString());
                     $('#lbl_odometer').text(cab['odometer'].toString());
+                    $('#lbl_queue').text(cab['queue'].toString());
                 }
                 return false;
             });
@@ -59,7 +60,8 @@
     Channel:<label id='lbl_channel'>?</label><br/><br/>
     Cab#<label id='lbl_id'>?</label><br/>
     is_busy: <label id='lbl_isbusy'>?</label><br/>
-    odometer: <label id='lbl_odometer'>?</label>
+    odometer: <label id='lbl_odometer'>?</label><br/>
+    queue: <label id='lbl_queue'>?</label>
     <h2>Commands: </h2>
     <form id="register" method="POST" action="">
         <input type="submit" value="Register">
