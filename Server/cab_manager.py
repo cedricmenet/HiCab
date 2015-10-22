@@ -27,7 +27,7 @@ class Cab(object):
 				try: 
 					self.path = get_path(self.json_map, self.position, self.current_request.location)
 				except:
-					print('[.. CabDevice#'+ str(self.id_cab) +']: Dijsktra fail' + sys.exc_info()[0])
+					print('[.. CabDevice#'+ str(self.id_cab) +']: Dijsktra fail')
 				print('[.. CabDevice#'+ str(self.id_cab) +']: Accept a cab request')
 			else:
 				print('[.. CabDevice#'+ str(self.id_cab) +']: Refuse a cab request')
@@ -50,11 +50,6 @@ class Cab(object):
 			total_progress = self.position["progression"] + progress
 			is_arrived = False
 			# Gestion de l'arrêt au client
-			print("LenPath: " + str(len(self.path)))
-			print("Path")
-			print(self.path)
-			print("Pos")
-			print(self.position)
 			if len(self.path) <= 1 and self.position["name"] == self.current_request.location["name"] and total_progress <= 1:
 				destination = self.current_request.location
 				if "backward" in self.position and self.position["backward"]:
@@ -206,7 +201,7 @@ class ChannelCab:
 	# Envoi de message vers le cab_device
 	def send(self, message):
 		if self.on_air:
-			#print('[=> CabDevice#'+ str(self.cab.id_cab) +']: ' + message)
+			print('[=> CabDevice#'+ str(self.cab.id_cab) +']: ' + message)
 			try:
 				self.websocket.send(message)
 			except:
@@ -246,7 +241,7 @@ class ChannelDisplay:
 	# Envoi de message vers le display_device
 	def send(self, message):
 		if self.on_air:
-			#print("[=> DisplayDevice]: " + message)
+			print("[=> DisplayDevice]: " + message)
 			try:
 				self.websocket.send(message)
 			except:
